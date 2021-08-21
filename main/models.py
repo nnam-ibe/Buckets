@@ -1,10 +1,16 @@
 from django.db import models
+from django.conf import settings
 
 class Bucket(models.Model):
 	name = models.CharField(max_length=32)
-	amount_saved = models.DecimalField(decimal_places=2, max_digits=9)
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+	created_date = models.DateTimeField(auto_now_add=True)
+	last_modified = models.DateTimeField(auto_now=True)
 
-class Goals(models.Model):
+	def __str__(self) -> str:
+		return self.name
+
+class Goal(models.Model):
 	SEMI_MONTHLY = 'SEMI_MONTHLY'
 	MONTHLY = 'MONTHLY'
 	BI_WEEKLY = 'BI_WEEKLY'
@@ -19,11 +25,17 @@ class Goals(models.Model):
 	]
 	name = models.CharField(max_length=32)
 	goal = models.DecimalField(decimal_places=2, max_digits=9)
+	amount_saved = models.DecimalField(decimal_places=2, max_digits=9)
 	auto_update = models.BooleanField(default=True)
-	bucket_id = models.ForeignKey(Bucket, on_delete=models.CASCADE)
+	created_date = models.DateTimeField(auto_now_add=True)
+	last_modified = models.DateTimeField(auto_now=True)
 	contrib_amount = models.DecimalField(decimal_places=2, max_digits=9)
 	contrib_frequeny = models.CharField(
 		max_length=32,
 		choices=CONTRIB_FREQUENCY,
 		default=MONTHLY
 	)
+	bucket = models.ForeignKey(Bucket, on_delete=models.CASCADE)
+
+	def __str__(self) -> str:
+		return self.name
