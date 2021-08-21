@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-c5@=1=^y)rvum*ocv!6wuklv9b3u$)vf+iv+w!uev4@v2#54a%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
 ALLOWED_HOSTS = []
 
@@ -72,11 +72,24 @@ WSGI_APPLICATION = 'buckets.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+# Environment variables
+BUCKETS_DB_NAME = os.environ.get('BUCKETS_DB_NAME')
+BUCKETS_DB_USER = os.environ.get('BUCKETS_DB_USER')
+BUCKETS_DB_PASS = os.environ.get('BUCKETS_DB_PASS')
+BUCKETS_DB_HOST = os.environ.get('BUCKETS_DB_HOST')
+BUCKETS_DB_PORT = os.environ.get('BUCKETS_DB_PORT')
+
+if None in [BUCKETS_DB_NAME, BUCKETS_DB_USER, BUCKETS_DB_PASS, BUCKETS_DB_HOST, BUCKETS_DB_PORT]:
+    raise Exception('environment variables not exported')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': BUCKETS_DB_NAME,
+        'USER': BUCKETS_DB_USER,
+        'PASSWORD': BUCKETS_DB_PASS,
+        'HOST': BUCKETS_DB_HOST,
+        'PORT': BUCKETS_DB_PORT,
     }
 }
 
