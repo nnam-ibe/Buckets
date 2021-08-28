@@ -24,7 +24,7 @@ class Goal(models.Model):
 		(NA, 'N/A'),
 	]
 	name = models.CharField(max_length=32)
-	goal = models.DecimalField(decimal_places=2, max_digits=9)
+	goal_amount = models.DecimalField(decimal_places=2, max_digits=9)
 	amount_saved = models.DecimalField(decimal_places=2, max_digits=9)
 	auto_update = models.BooleanField(default=True)
 	created_date = models.DateTimeField(auto_now_add=True)
