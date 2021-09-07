@@ -1,7 +1,5 @@
 from http import HTTPStatus
 
-from django.contrib.auth.models import User
-
 from rest_framework.test import APITestCase
 
 from backend.models import Bucket
