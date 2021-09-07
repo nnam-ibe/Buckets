@@ -133,3 +133,25 @@ class BucketViewSetTestCase(APITestCase):
             }
             response = self.client.put(f'/api/bucket/{buc.id}/', payload, format='json')
             self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+
+    def test_cannot_change_bucket_user(self):
+        """
+        Should not be able to change a bucket's user
+        """
+        user1 = Utils.create_sample_user()
+        buc1 = Utils.create_sample_bucket(self.user)
+
+        payload1 = {
+            'id': buc1.id,
+            'user': user1.id,
+        }
+        response = self.client.patch(f'/api/bucket/{buc1.id}/', payload1, format='json')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+
+        buc2 = Utils.create_sample_bucket(user1)
+        payload2 = {
+            'id': buc2.id,
+            'user': self.user.id,
+        }
+        response = self.client.patch(f'/api/bucket/{buc2.id}/', payload2, format='json')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)

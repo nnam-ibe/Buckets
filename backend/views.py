@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse
+from django.http.response import HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status, viewsets
@@ -8,10 +8,6 @@ from .serializers import BucketSerializer, GoalSerializer
 from .models import Bucket, Goal
 from .utils import Utils
 from .Exceptions import UserNotFoundError, InvalidRequestError
-
-# TODO: remove
-def index(request):
-    return HttpResponse("Hello, world. You're at the main index.")
 
 class BucketViewSet(viewsets.ModelViewSet):
     queryset = Bucket.objects.all()
@@ -72,6 +68,14 @@ class BucketViewSet(viewsets.ModelViewSet):
         pk = kwargs.get('pk', None)
         queryset = Bucket.objects.filter(user=user)
         bucket = get_object_or_404(queryset, pk=pk)
+
+        # if the user.id is included in the payload, ensure the user
+        # already owns the bucket
+        updated_user_id = request.data.get('user', None)
+        if (updated_user_id is not None) and (
+            updated_user_id != bucket.user.id
+        ):
+            return HttpResponseNotFound('Resource not found')
 
         serializer = self.get_serializer(bucket, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
