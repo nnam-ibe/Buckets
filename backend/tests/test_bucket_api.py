@@ -1,4 +1,3 @@
-import json
 from http import HTTPStatus
 
 from django.contrib.auth.models import User
@@ -71,7 +70,7 @@ class BucketViewSetTestCase(APITestCase):
             response = self.client.get(f'/api/bucket/{buc.id}/')
             self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
 
-    def test_update_bucket(self):
+    def test_patch_bucket(self):
         """
         Should be able to update own buckets
         """
@@ -80,7 +79,7 @@ class BucketViewSetTestCase(APITestCase):
         for buc in user_buckets:
             payload = {
                 'id': buc.id,
-                'name': Utils.get_random_string()
+                'name': Utils.get_random_string(),
             }
             response = self.client.patch(f'/api/bucket/{buc.id}/', payload, format='json')
             self.assertEqual(response.status_code, HTTPStatus.OK._value_)
@@ -88,7 +87,7 @@ class BucketViewSetTestCase(APITestCase):
             self.assertEqual(response.data['name'], payload['name'])
             self.assertEqual(response.data['user'], buc.user.id)
 
-    def test_update_bucket_should_validate_user(self):
+    def test_patch_bucket_should_validate_user(self):
         """
         Should not be able to update others buckets
         """
@@ -97,7 +96,40 @@ class BucketViewSetTestCase(APITestCase):
         for buc in others_buckets:
             payload = {
                 'id': buc.id,
-                'name': Utils.get_random_string()
+                'name': Utils.get_random_string(),
             }
             response = self.client.patch(f'/api/bucket/{buc.id}/', payload, format='json')
+            self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+
+    def test_put_bucket(self):
+        """
+        Should be able to put own buckets
+        """
+        user_buckets = Utils.create_sample_buckets(self.user)
+
+        for buc in user_buckets:
+            payload = {
+                'id': buc.id,
+                'name': Utils.get_random_string(),
+                'user': self.user.id,
+            }
+            response = self.client.put(f'/api/bucket/{buc.id}/', payload, format='json')
+            self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+            self.assertEqual(response.data['id'], buc.id)
+            self.assertEqual(response.data['name'], payload['name'])
+            self.assertEqual(response.data['user'], buc.user.id)
+
+    def test_put_bucket_should_validate_user(self):
+        """
+        Should not be able to update others buckets
+        """
+        others_buckets = Utils.create_sample_buckets()
+
+        for buc in others_buckets:
+            payload = {
+                'id': buc.id,
+                'name': Utils.get_random_string(),
+                'user': self.user.id,
+            }
+            response = self.client.put(f'/api/bucket/{buc.id}/', payload, format='json')
             self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
