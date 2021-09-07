@@ -8,7 +8,7 @@ class UserNotFoundError(Exception):
         status -- response status of the error
     """
 
-    def __init__(self, message="User not found", status=status.HTTP_400_BAD_REQUEST):
+    def __init__(self, message="Permission denied", status=status.HTTP_403_FORBIDDEN):
         self.message = message
         self.status = status
     """
