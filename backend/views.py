@@ -13,11 +13,11 @@ class BucketViewSet(viewsets.ModelViewSet):
     queryset = Bucket.objects.all()
     serializer_class = BucketSerializer
 
-    def serialize_buckets(self, data, many=True):
+    def __serialize_buckets(self, data, many=True):
         serializer = self.get_serializer(data, many=many)
         return serializer.data
 
-    def validate_serializer(self, serializer):
+    def __validate_serializer(self, serializer):
         # TODO: should replace with raiseException=True
         if serializer.is_valid():
             return
@@ -28,7 +28,7 @@ class BucketViewSet(viewsets.ModelViewSet):
             # TODO: verify user attr is the same as logged in user
             Utils.get_user_from_request(request)
             serializer = self.get_serializer(data=request.data)
-            self.validate_serializer(serializer)
+            self.__validate_serializer(serializer)
         except (UserNotFoundError, InvalidRequestError) as err:
              return Utils.get_error_response(err)
 
@@ -43,7 +43,7 @@ class BucketViewSet(viewsets.ModelViewSet):
             return Utils.get_error_response(err)
 
         bucket_models = Bucket.objects.filter(user=user).all()
-        serialized_data = self.serialize_buckets(bucket_models)
+        serialized_data = self.__serialize_buckets(bucket_models)
         return Response(serialized_data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
@@ -55,7 +55,7 @@ class BucketViewSet(viewsets.ModelViewSet):
 
         queryset = Bucket.objects.filter(user=user)
         bucket = get_object_or_404(queryset, pk=pk)
-        return Response(self.serialize_buckets(bucket, many=False))
+        return Response(self.__serialize_buckets(bucket, many=False))
 
     def update(self, request, *args, **kwargs):
         user = None
