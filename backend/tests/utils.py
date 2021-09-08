@@ -7,7 +7,7 @@ from backend.models import Bucket
 
 class Utils:
     @staticmethod
-    def create_sample_user(username=None, password=None):
+    def create_test_user(username=None, password=None):
         if username is None:
             username = Utils.get_random_string()
         if password is None:
@@ -17,9 +17,9 @@ class Utils:
         return user
 
     @staticmethod
-    def create_sample_bucket(user=None):
+    def create_test_bucket(user=None):
         if user is None:
-            user = Utils.create_sample_user()
+            user = Utils.create_test_user()
 
         bucket_attr = {
             "name": Utils.get_random_string(),
@@ -29,13 +29,13 @@ class Utils:
         return bucket
 
     @staticmethod
-    def create_sample_buckets(user=None, len=3):
+    def create_test_buckets(user=None, len=3):
         if user is None:
-            user = Utils.create_sample_user()
+            user = Utils.create_test_user()
 
         buckets = []
         for i in range(len):
-            buckets.append(Utils.create_sample_bucket(user))
+            buckets.append(Utils.create_test_bucket(user))
 
         return buckets
 
@@ -44,3 +44,15 @@ class Utils:
         letters = string.ascii_lowercase
         rand_str = ''.join(random.choice(letters) for i in range(len))
         return rand_str
+
+    @staticmethod
+    def get_test_goal(**kwargs):
+        goal = {
+            'name': kwargs.get('name', Utils.get_random_string()),
+            'bucket': kwargs.get('bucket', Utils.create_test_bucket().id),
+            'goal_amount': kwargs.get('goal_amount', '500.00'),
+            'amount_saved': kwargs.get('amount_saved', '20.00'),
+            'contrib_amount': kwargs.get('contrib_amount', '30.00'),
+            'contrib_frequeny': kwargs.get('contrib_frequeny', 'MONTHLY'),
+        }
+        return goal
