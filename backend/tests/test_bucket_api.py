@@ -17,24 +17,37 @@ class BucketViewSetTestCase(APITestCase):
         """
         Should be able to create a bucket as a user
         """
-        bucket_data = {
+        payload = {
             'name': 'Test Saving Account',
             'user': self.user.id,
         }
-        response = self.client.post('/api/bucket/', bucket_data, format='json')
+        response = self.client.post('/api/bucket/', payload, format='json')
         self.assertEqual(response.status_code, HTTPStatus.CREATED._value_)
-        self.assertEqual(response.data["name"], bucket_data["name"])
+        self.assertIn('id', response.data)
+        self.assertEqual(response.data["name"], payload["name"])
+
+    def test_create_bucket_for_another_user(self):
+        """
+        Should not be able to create a bucket for another user
+        """
+        user = Utils.create_sample_user()
+        payload = {
+            'name': 'Test Saving Account',
+            'user': user.id,
+        }
+        response = self.client.post('/api/bucket/', payload, format='json')
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST._value_)
 
     def test_create_bucket_should_validate_user(self):
         """
         Should only be able to create buckets when logged in
         """
         self.client.logout()
-        bucket_data = {
+        payload = {
             'name': 'Test Saving Account',
             'user': self.user.id,
         }
-        response = self.client.post('/api/bucket/', bucket_data, format='json')
+        response = self.client.post('/api/bucket/', payload, format='json')
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN._value_)
         # clean up
         self.client.login(username=self.user_name, password=self.user_pass)
