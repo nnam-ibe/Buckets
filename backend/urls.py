@@ -2,7 +2,8 @@ from django.urls import include, path
 
 from rest_framework import routers
 
-from .views import BucketViewSet, GoalViewSet
+from .views.BucketViewSet import BucketViewSet
+from .views.GoalViewSet import GoalViewSet
 
 router = routers.DefaultRouter()
 router.register(r'bucket', BucketViewSet)

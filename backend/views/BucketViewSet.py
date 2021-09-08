@@ -1,13 +1,13 @@
-from django.http.response import HttpResponseNotFound
+from django.http.response import HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
-from .serializers import BucketSerializer, GoalSerializer
-from .models import Bucket, Goal
-from .utils import Utils
-from .Exceptions import UserNotFoundError, InvalidRequestError
+from ..serializers import BucketSerializer, GoalSerializer
+from ..models import Bucket, Goal
+from ..utils import Utils
+from ..Exceptions import UserNotFoundError, InvalidRequestError
 
 class BucketViewSet(viewsets.ModelViewSet):
     queryset = Bucket.objects.all()
@@ -24,13 +24,17 @@ class BucketViewSet(viewsets.ModelViewSet):
         raise InvalidRequestError(message="Request is invalid")
 
     def create(self, request):
+        user = None
         try:
-            # TODO: verify user attr is the same as logged in user
-            Utils.get_user_from_request(request)
+            user = Utils.get_user_from_request(request)
             serializer = self.get_serializer(data=request.data)
             self.__validate_serializer(serializer)
         except (UserNotFoundError, InvalidRequestError) as err:
              return Utils.get_error_response(err)
+
+        # assert that the bucket is being created for the current user
+        if user.id != request.data.get('user', None):
+            return HttpResponseBadRequest('Bad Request')
 
         Bucket.objects.create(**serializer.validated_data)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -87,7 +91,3 @@ class BucketViewSet(viewsets.ModelViewSet):
             bucket._prefetched_objects_cache = {}
 
         return Response(serializer.data)
-
-class GoalViewSet(viewsets.ModelViewSet):
-    queryset = Goal.objects.all()
-    serializer_class = GoalSerializer
