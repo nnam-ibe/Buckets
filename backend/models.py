@@ -3,7 +3,6 @@ from django.conf import settings
 
 class Bucket(models.Model):
     name = models.CharField(max_length=32)
-    # TODO: should not be editable, editable=False
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
