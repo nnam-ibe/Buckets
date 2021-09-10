@@ -25,3 +25,14 @@ class GoalViewSet(viewsets.ModelViewSet):
         goal = Goal.objects.create(**serializer.validated_data)
         saved_data = self.get_serializer(goal).data
         return Response(saved_data, status=status.HTTP_201_CREATED)
+
+    def list(self, request):
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
+
+        bucket_models = Goal.objects.filter(bucket__user=auth.user).all()
+        serialized_data = self.get_serializer(bucket_models, many=True).data
+        if not auth.authorize(action=Action.LIST, record=serialized_data.copy()):
+            return auth.get_error_as_response()
+        return Response(serialized_data, status=status.HTTP_200_OK)

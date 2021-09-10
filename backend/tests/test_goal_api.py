@@ -48,3 +48,21 @@ class GoalViewSetTestCase(APITestCase):
         self.client.login(username=self.user_name, password=self.user_pass)
         response = self.client.post('/api/goal/', payload, format='json')
         self.assertEqual(response.status_code, HTTPStatus.CREATED._value_)
+
+    def test_list_goals(self):
+        """
+        Should only be able to list the goals of the current user
+        """
+        user_bucket = Utils.create_test_bucket(user=self.user)
+        other_bucket = Utils.create_test_bucket()
+
+        user_goals = Utils.create_test_goals(len=5, bucket=user_bucket)
+        other_goals = Utils.create_test_goals(len=3, bucket=other_bucket)
+
+        total_num_of_goals = len(user_goals) + len(other_goals)
+        self.assertEqual(Goal.objects.count(), total_num_of_goals)
+
+        response = self.client.get('/api/goal/')
+        self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+        data = response.data
+        self.assertEqual(len(data), len(user_goals))
