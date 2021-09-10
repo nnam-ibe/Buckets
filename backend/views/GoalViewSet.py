@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+
 from backend.utils import Utils
 from rest_framework import status, viewsets
 from rest_framework.response import Response
@@ -33,6 +35,14 @@ class GoalViewSet(viewsets.ModelViewSet):
 
         bucket_models = Goal.objects.filter(bucket__user=auth.user).all()
         serialized_data = self.get_serializer(bucket_models, many=True).data
-        if not auth.authorize(action=Action.LIST, record=serialized_data.copy()):
-            return auth.get_error_as_response()
         return Response(serialized_data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk=None):
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
+
+        queryset = Goal.objects.filter(bucket__user=auth.user).all()
+        goal = get_object_or_404(queryset, pk=pk)
+        serialized_data = self.get_serializer(goal).data
+        return Response(serialized_data)

@@ -66,3 +66,20 @@ class GoalViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK._value_)
         data = response.data
         self.assertEqual(len(data), len(user_goals))
+
+    def test_retrieve_goals(self):
+        """
+        Should only be able to retrieve the goals of the current user
+        """
+        user_bucket = Utils.create_test_bucket(user=self.user)
+        other_bucket = Utils.create_test_bucket()
+        user_goals = Utils.create_test_goals(len=5, bucket=user_bucket)
+        other_goals = Utils.create_test_goals(len=3, bucket=other_bucket)
+
+        for goal in user_goals:
+            response = self.client.get(f'/api/goal/{goal.id}/')
+            self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+
+        for goal in other_goals:
+            response = self.client.get(f'/api/goal/{goal.id}/')
+            self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
