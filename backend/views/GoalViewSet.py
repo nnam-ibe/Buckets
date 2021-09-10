@@ -32,8 +32,8 @@ class GoalViewSet(viewsets.ModelViewSet):
         if auth.has_error():
             return auth.get_error_as_response()
 
-        bucket_models = Goal.objects.filter(bucket__user=auth.user).all()
-        serialized_data = self.get_serializer(bucket_models, many=True).data
+        goal_models = Goal.objects.filter(bucket__user=auth.user).all()
+        serialized_data = self.get_serializer(goal_models, many=True).data
         return Response(serialized_data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
@@ -44,7 +44,7 @@ class GoalViewSet(viewsets.ModelViewSet):
         queryset = Goal.objects.filter(bucket__user=auth.user).all()
         goal = get_object_or_404(queryset, pk=pk)
         serialized_data = self.get_serializer(goal).data
-        return Response(serialized_data)
+        return Response(serialized_data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         auth = Authorization(request)
@@ -59,7 +59,8 @@ class GoalViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(goal, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
-        if not auth.authorize(Action.UPDATE, { 'user': goal.bucket.user}):
+        record = serializer.validated_data.copy()
+        if not auth.authorize(Action.UPDATE, record):
             return auth.get_error_as_response()
 
         self.perform_update(serializer)
@@ -69,4 +70,4 @@ class GoalViewSet(viewsets.ModelViewSet):
             # forcibly invalidate the prefetch cache on the goal.
             goal._prefetched_objects_cache = {}
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)

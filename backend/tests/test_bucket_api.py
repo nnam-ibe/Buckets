@@ -23,8 +23,7 @@ class BucketViewSetTestCase(APITestCase):
         }
         response = self.client.post('/api/bucket/', payload, format='json')
         self.assertEqual(response.status_code, HTTPStatus.CREATED._value_)
-        # TODO: should have id
-        # self.assertIn('id', response.data)
+        self.assertIn('id', response.data)
         self.assertEqual(response.data["name"], payload["name"])
 
     def test_create_bucket_for_another_user(self):
@@ -160,7 +159,7 @@ class BucketViewSetTestCase(APITestCase):
             'user': user1.id,
         }
         response = self.client.patch(f'/api/bucket/{buc1.id}/', payload1, format='json')
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST._value_)
 
         buc2 = Utils.create_test_bucket(user1)
         payload2 = {

@@ -6,83 +6,66 @@ from rest_framework.response import Response
 
 from ..serializers import BucketSerializer
 from ..models import Bucket
-from ..utils import Utils
+from ..lib.utils import Utils
+from ..lib.authorization import Authorization, Action
 from ..Exceptions import UserNotFoundError, InvalidRequestError
 
 class BucketViewSet(viewsets.ModelViewSet):
     queryset = Bucket.objects.all()
     serializer_class = BucketSerializer
 
-    def __serialize_buckets(self, data, many=True):
-        serializer = self.get_serializer(data, many=many)
-        return serializer.data
-
-    def __validate_serializer(self, serializer):
-        # TODO: should replace with raiseException=True
-        if serializer.is_valid():
-            return
-        raise InvalidRequestError(message="Request is invalid")
-
     def create(self, request):
-        user = None
-        try:
-            user = Utils.get_user_from_request(request)
-            serializer = self.get_serializer(data=request.data)
-            self.__validate_serializer(serializer)
-        except (UserNotFoundError, InvalidRequestError) as err:
-             return Utils.get_error_response(err)
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
 
-        # assert that the bucket is being created for the current user
-        if user.id != request.data.get('user', None):
-            return HttpResponseBadRequest('Bad Request')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        Bucket.objects.create(**serializer.validated_data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        record = serializer.validated_data.copy()
+        if not auth.authorize(action=Action.CREATE, record=record):
+            return auth.get_error_as_response()
+
+        bucket = Bucket.objects.create(**serializer.validated_data)
+        saved_data = self.get_serializer(bucket).data
+        return Response(saved_data, status=status.HTTP_201_CREATED)
 
     def list(self, request):
-        user = None
-        try:
-            user = Utils.get_user_from_request(request)
-        except UserNotFoundError as err:
-            return Utils.get_error_response(err)
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
 
-        bucket_models = Bucket.objects.filter(user=user).all()
-        serialized_data = self.__serialize_buckets(bucket_models)
+        bucket_models = Bucket.objects.filter(user=auth.user).all()
+        serialized_data = self.get_serializer(bucket_models, many=True).data
         return Response(serialized_data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
-        user = None
-        try:
-            user = Utils.get_user_from_request(request)
-        except UserNotFoundError as err:
-            return Utils.get_error_response(err)
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
 
-        queryset = Bucket.objects.filter(user=user)
+        queryset = Bucket.objects.filter(user=auth.user)
         bucket = get_object_or_404(queryset, pk=pk)
-        return Response(self.__serialize_buckets(bucket, many=False))
+        serialized_data = self.get_serializer(bucket).data
+        return Response(serialized_data, status=status.HTTP_200_OK)
 
     def update(self, request, **kwargs):
-        user = None
-        try:
-            user = Utils.get_user_from_request(request)
-        except UserNotFoundError as err:
-            return Utils.get_error_response(err)
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
 
         partial = kwargs.get('partial', False)
         pk = kwargs.get('pk', None)
-        queryset = Bucket.objects.filter(user=user)
+        queryset = Bucket.objects.filter(user=auth.user)
         bucket = get_object_or_404(queryset, pk=pk)
-
-        # if the user.id is included in the payload, ensure the user
-        # already owns the bucket
-        updated_user_id = request.data.get('user', None)
-        if (updated_user_id is not None) and (
-            updated_user_id != bucket.user.id
-        ):
-            return HttpResponseNotFound('Resource not found')
 
         serializer = self.get_serializer(bucket, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
+
+        record = serializer.validated_data.copy()
+        if not auth.authorize(Action.UPDATE, record):
+            return auth.get_error_as_response()
+
         self.perform_update(serializer)
 
         if getattr(bucket, '_prefetched_objects_cache', None):
@@ -90,4 +73,4 @@ class BucketViewSet(viewsets.ModelViewSet):
             # forcibly invalidate the prefetch cache on the bucket.
             bucket._prefetched_objects_cache = {}
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
