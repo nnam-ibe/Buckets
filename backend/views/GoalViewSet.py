@@ -46,3 +46,28 @@ class GoalViewSet(viewsets.ModelViewSet):
         goal = get_object_or_404(queryset, pk=pk)
         serialized_data = self.get_serializer(goal).data
         return Response(serialized_data)
+
+    def update(self, request, *args, **kwargs):
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
+
+        partial = kwargs.get('partial', False)
+        pk = kwargs.get('pk', None)
+        queryset = Goal.objects.filter(bucket__user=auth.user).select_related('bucket').all()
+        goal = get_object_or_404(queryset, pk=pk)
+
+        serializer = self.get_serializer(goal, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        if not auth.authorize(Action.UPDATE, { 'user': goal.bucket.user}):
+            return auth.get_error_as_response()
+
+        self.perform_update(serializer)
+
+        if getattr(goal, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the goal.
+            goal._prefetched_objects_cache = {}
+
+        return Response(serializer.data)

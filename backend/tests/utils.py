@@ -50,13 +50,16 @@ class Utils:
         via_api = kwargs.get('via_api', True)
         goal = {
             'name': kwargs.get('name', Utils.get_random_string()),
-            'bucket': kwargs.get('bucket',
-                Utils.create_test_bucket().id if via_api else Utils.create_test_bucket()),
             'goal_amount': kwargs.get('goal_amount', '500.00'),
             'amount_saved': kwargs.get('amount_saved', '20.00'),
             'contrib_amount': kwargs.get('contrib_amount', '30.00'),
             'contrib_frequeny': kwargs.get('contrib_frequeny', 'MONTHLY'),
+            'bucket': kwargs.get('bucket',
+                Utils.create_test_bucket().id if via_api else Utils.create_test_bucket()),
         }
+        goal_id = kwargs.get('id', None)
+        if goal_id is not None:
+            goal['id'] = goal_id
         return goal
 
     @staticmethod

@@ -61,7 +61,7 @@ class BucketViewSet(viewsets.ModelViewSet):
         bucket = get_object_or_404(queryset, pk=pk)
         return Response(self.__serialize_buckets(bucket, many=False))
 
-    def update(self, request, *args, **kwargs):
+    def update(self, request, **kwargs):
         user = None
         try:
             user = Utils.get_user_from_request(request)

@@ -83,3 +83,75 @@ class GoalViewSetTestCase(APITestCase):
         for goal in other_goals:
             response = self.client.get(f'/api/goal/{goal.id}/')
             self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+
+    def test_patch_goal(self):
+        """
+        Should be able to update own goals
+        """
+        user_bucket = Utils.create_test_bucket(user=self.user)
+        user_goals = Utils.create_test_goals(len=5, bucket=user_bucket)
+
+        for goal in user_goals:
+            payload = {
+                'id': goal.id,
+                'name': Utils.get_random_string(),
+            }
+            response = self.client.patch(f'/api/goal/{goal.id}/', payload, format='json')
+            self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+            self.assertEqual(response.data['id'], goal.id)
+            self.assertEqual(response.data['name'], payload['name'])
+
+    def test_patch_bucket_should_validate_user(self):
+        """
+        Should not be able to update others goals
+        """
+        other_bucket = Utils.create_test_bucket()
+        other_goals = Utils.create_test_goals(len=3, bucket=other_bucket)
+
+        for goal in other_goals:
+            payload = payload = {
+                'id': goal.id,
+                'name': Utils.get_random_string(),
+            }
+            response = self.client.patch(f'/api/goal/{goal.id}/', payload, format='json')
+            self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+
+    def test_put_goal(self):
+        """
+        Should be able to put own goals
+        """
+        user_bucket = Utils.create_test_bucket(user=self.user)
+        user_goals = Utils.create_test_goals(len=5, bucket=user_bucket)
+
+        for goal in user_goals:
+            payload = Utils.get_test_goal(id=goal.id, bucket=user_bucket.id)
+            response = self.client.put(f'/api/goal/{goal.id}/', payload, format='json')
+            self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+            self.assertEqual(response.data['id'], goal.id)
+            self.assertEqual(response.data['name'], payload['name'])
+
+    def test_put_goal_should_validate_user(self):
+        """
+        Should not be able to update others goals
+        """
+        other_bucket = Utils.create_test_bucket()
+        other_goals = Utils.create_test_goals(len=3, bucket=other_bucket)
+
+        for goal in other_goals:
+            payload = Utils.get_test_goal(id=goal.id, bucket=other_bucket.id)
+            response = self.client.put(f'/api/goal/{goal.id}/', payload, format='json')
+            self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+
+    def test_change_goal_bucket(self):
+        """
+        Should be able to change a goals bucket
+        """
+        # TODO: the flip side is should not be able to move to another users bucket
+        user_buckets = Utils.create_test_buckets(user=self.user, len=2)
+        goal1 = Utils.create_test_goal(bucket=user_buckets[0])
+        goal2 = Utils.create_test_goal(bucket=user_buckets[1])
+
+        # move goal1 to the second bucket
+        payload1 = Utils.get_test_goal(id=goal1.id, bucket=user_buckets[1].id)
+        response = self.client.patch(f'/api/goal/{goal1.id}/', payload1, format='json')
+        self.assertEqual(response.status_code, HTTPStatus.OK._value_)
