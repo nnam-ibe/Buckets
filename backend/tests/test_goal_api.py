@@ -146,12 +146,24 @@ class GoalViewSetTestCase(APITestCase):
         """
         Should be able to change a goals bucket
         """
-        # TODO: the flip side is should not be able to move to another users bucket
+        # create two buckets
         user_buckets = Utils.create_test_buckets(user=self.user, len=2)
-        goal1 = Utils.create_test_goal(bucket=user_buckets[0])
-        goal2 = Utils.create_test_goal(bucket=user_buckets[1])
+        goal = Utils.create_test_goal(bucket=user_buckets[0])
 
-        # move goal1 to the second bucket
-        payload1 = Utils.get_test_goal(id=goal1.id, bucket=user_buckets[1].id)
-        response = self.client.patch(f'/api/goal/{goal1.id}/', payload1, format='json')
+        # move goal to the second bucket
+        payload = Utils.get_test_goal(id=goal.id, bucket=user_buckets[1].id)
+        response = self.client.patch(f'/api/goal/{goal.id}/', payload, format='json')
         self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+
+    def test_cannot_change_goal_to_other_users_bucket(self):
+        """
+        Should not be able to move a goal to another users bucket
+        """
+        user_bucket = Utils.create_test_bucket(user=self.user)
+        other_bucket = Utils.create_test_bucket()
+        goal = Utils.create_test_goal(bucket=user_bucket)
+
+        # move goal to the other users bucket
+        payload = Utils.get_test_goal(id=goal.id, bucket=other_bucket.id)
+        response = self.client.patch(f'/api/goal/{goal.id}/', payload, format='json')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)

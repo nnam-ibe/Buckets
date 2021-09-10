@@ -55,6 +55,10 @@ class GoalViewSet(viewsets.ModelViewSet):
         pk = kwargs.get('pk', None)
         queryset = Goal.objects.filter(bucket__user=auth.user).select_related('bucket').all()
         goal = get_object_or_404(queryset, pk=pk)
+        # if moving to a new bucket check if user owns bucket
+        new_bucket_id = request.data.get('bucket', None)
+        if new_bucket_id is not None:
+            get_object_or_404(queryset, pk=new_bucket_id)
 
         serializer = self.get_serializer(goal, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
