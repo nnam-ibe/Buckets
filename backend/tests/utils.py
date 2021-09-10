@@ -3,9 +3,15 @@ import string
 
 from django.contrib.auth.models import User
 
-from backend.models import Bucket
+from backend.models import Bucket, Goal
 
 class Utils:
+    @staticmethod
+    def get_random_string(len=8):
+        letters = string.ascii_lowercase
+        rand_str = ''.join(random.choice(letters) for i in range(len))
+        return rand_str
+
     @staticmethod
     def create_test_user(username=None, password=None):
         if username is None:
@@ -40,12 +46,6 @@ class Utils:
         return buckets
 
     @staticmethod
-    def get_random_string(len=8):
-        letters = string.ascii_lowercase
-        rand_str = ''.join(random.choice(letters) for i in range(len))
-        return rand_str
-
-    @staticmethod
     def get_test_goal(**kwargs):
         goal = {
             'name': kwargs.get('name', Utils.get_random_string()),
@@ -56,3 +56,15 @@ class Utils:
             'contrib_frequeny': kwargs.get('contrib_frequeny', 'MONTHLY'),
         }
         return goal
+
+    @staticmethod
+    def create_test_goal(**kwargs):
+        goal_attrs = Utils.get_test_goal(**kwargs)
+        return Goal.objects.create(**goal_attrs)
+
+    @staticmethod
+    def create_test_goals(len=3, **kwargs):
+        goals = []
+        for i in range(len):
+            goals.append(Utils.create_test_goal(**kwargs))
+        return goals

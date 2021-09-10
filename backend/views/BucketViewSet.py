@@ -4,8 +4,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
-from ..serializers import BucketSerializer, GoalSerializer
-from ..models import Bucket, Goal
+from ..serializers import BucketSerializer
+from ..models import Bucket
 from ..utils import Utils
 from ..Exceptions import UserNotFoundError, InvalidRequestError
 
