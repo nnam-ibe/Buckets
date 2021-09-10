@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from rest_framework.test import APITestCase
 
-from backend.models import Bucket, Goal
+from backend.models import Goal
 from .utils import Utils
 
 class GoalViewSetTestCase(APITestCase):
