@@ -39,7 +39,7 @@ class BucketViewSetTestCase(APITestCase):
         response = self.client.post('/api/bucket/', payload, format='json')
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST._value_)
 
-    def test_create_bucket_should_validate_user(self):
+    def test_create_bucket_should_validate_user_logged_in(self):
         """
         Should only be able to create buckets when logged in
         """
@@ -50,8 +50,10 @@ class BucketViewSetTestCase(APITestCase):
         }
         response = self.client.post('/api/bucket/', payload, format='json')
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN._value_)
-        # clean up
+        # should work after loggin in
         self.client.login(username=self.user_name, password=self.user_pass)
+        response = self.client.post('/api/bucket/', payload, format='json')
+        self.assertEqual(response.status_code, HTTPStatus.CREATED._value_)
 
     def test_list_buckets(self):
         """
