@@ -166,4 +166,4 @@ class GoalViewSetTestCase(APITestCase):
         # move goal to the other users bucket
         payload = Utils.get_test_goal(id=goal.id, bucket=other_bucket.id)
         response = self.client.patch(f'/api/goal/{goal.id}/', payload, format='json')
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST._value_)

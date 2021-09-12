@@ -4,8 +4,8 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 
 from ..serializers import GoalSerializer
-from ..models import Goal
-from ..lib.authorization import Authorization, Action
+from ..models import Bucket, Goal
+from ..lib.authorization import Authorization, Action, RecordType
 
 class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
@@ -46,6 +46,11 @@ class GoalViewSet(viewsets.ModelViewSet):
         serialized_data = self.get_serializer(goal).data
         return Response(serialized_data, status=status.HTTP_200_OK)
 
+    def _get_auth_record(self, serializer):
+        record = serializer.validated_data.copy()
+        record['_type'] = RecordType.GOAL
+        return record
+
     def update(self, request, *args, **kwargs):
         auth = Authorization(request)
         if auth.has_error():
@@ -55,15 +60,12 @@ class GoalViewSet(viewsets.ModelViewSet):
         pk = kwargs.get('pk', None)
         queryset = Goal.objects.filter(bucket__user=auth.user).select_related('bucket').all()
         goal = get_object_or_404(queryset, pk=pk)
-        # if moving to a new bucket check if user owns bucket
-        new_bucket_id = request.data.get('bucket', None)
-        if new_bucket_id is not None:
-            get_object_or_404(queryset, pk=new_bucket_id)
 
         serializer = self.get_serializer(goal, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
-        record = serializer.validated_data.copy()
+        record = self._get_auth_record(serializer)
+
         if not auth.authorize(Action.UPDATE, record):
             return auth.get_error_as_response()
 

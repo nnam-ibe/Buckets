@@ -6,9 +6,7 @@ from rest_framework.response import Response
 
 from ..serializers import BucketSerializer
 from ..models import Bucket
-from ..lib.utils import Utils
-from ..lib.authorization import Authorization, Action
-from ..Exceptions import UserNotFoundError, InvalidRequestError
+from ..lib.authorization import Authorization, Action, RecordType
 
 class BucketViewSet(viewsets.ModelViewSet):
     queryset = Bucket.objects.all()
@@ -49,6 +47,11 @@ class BucketViewSet(viewsets.ModelViewSet):
         serialized_data = self.get_serializer(bucket).data
         return Response(serialized_data, status=status.HTTP_200_OK)
 
+    def _get_auth_record(self, serializer):
+        record = serializer.validated_data.copy()
+        record['_type'] = RecordType.BUCKET
+        return record
+
     def update(self, request, **kwargs):
         auth = Authorization(request)
         if auth.has_error():
@@ -62,7 +65,7 @@ class BucketViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(bucket, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
-        record = serializer.validated_data.copy()
+        record = self._get_auth_record(serializer)
         if not auth.authorize(Action.UPDATE, record):
             return auth.get_error_as_response()
 
