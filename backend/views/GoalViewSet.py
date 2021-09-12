@@ -4,7 +4,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 
 from ..serializers import GoalSerializer
-from ..models import Bucket, Goal
+from ..models import Goal
 from ..lib.authorization import Authorization, Action, RecordType
 
 class GoalViewSet(viewsets.ModelViewSet):
