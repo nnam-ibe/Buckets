@@ -199,3 +199,24 @@ class BucketViewSetTestCase(APITestCase):
 
         response = self.client.get(f'/api/bucket/{bucket.id}/')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+
+    def test_get_bucket_goals(self):
+        """
+        Should be able to retrieve the goals of a bucket
+        """
+        bucket = Utils.create_test_bucket(self.user)
+        goals = Utils.create_test_goals(bucket=bucket, len=3)
+
+        response = self.client.get(f'/api/bucket/{bucket.id}/goals/')
+        self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+        self.assertEqual(len(response.data), len(goals))
+
+    def test_cannot_list_goals_of_other_users_bucket(self):
+        """
+        Should not be able to list the goals of another users bucket
+        """
+        bucket = Utils.create_test_bucket()
+        goals = Utils.create_test_goals(bucket=bucket, len=3)
+
+        response = self.client.get(f'/api/bucket/{bucket.id}/goals/')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)

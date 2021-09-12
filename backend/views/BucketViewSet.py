@@ -1,10 +1,11 @@
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from ..serializers import BucketSerializer
-from ..models import Bucket
+from ..serializers import BucketSerializer, GoalSerializer
+from ..models import Bucket, Goal
 from ..lib.authorization import Authorization, Action, RecordType
 
 class BucketViewSet(viewsets.ModelViewSet):
@@ -87,3 +88,16 @@ class BucketViewSet(viewsets.ModelViewSet):
         get_object_or_404(queryset, pk=pk)
 
         return super().destroy(request, **kwargs)
+
+    @action(detail=True, methods=['get'])
+    def goals(self, request, pk):
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
+
+        queryset = Bucket.objects.filter(user=auth.user)
+        bucket = get_object_or_404(queryset, pk=pk)
+
+        goal_models = Goal.objects.filter(bucket=bucket).all()
+        serialized_data = GoalSerializer(goal_models, many=True).data
+        return Response(serialized_data, status=status.HTTP_200_OK)
