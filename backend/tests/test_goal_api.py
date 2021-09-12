@@ -167,3 +167,29 @@ class GoalViewSetTestCase(APITestCase):
         payload = Utils.get_test_goal(id=goal.id, bucket=other_bucket.id)
         response = self.client.patch(f'/api/goal/{goal.id}/', payload, format='json')
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST._value_)
+
+    def test_can_delete_goal(self):
+        """
+        Should be able to delete own goals
+        """
+        user_bucket = Utils.create_test_bucket(user=self.user)
+        goal = Utils.create_test_goal(bucket=user_bucket)
+
+        response = self.client.get(f'/api/goal/{goal.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        response = self.client.delete(f'/api/goal/{goal.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+
+        response = self.client.get(f'/api/goal/{goal.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_cannot_delete_others_goals(self):
+        """
+        Should not be able to delete the goals of another user
+        """
+        bucket = Utils.create_test_bucket()
+        goal = Utils.create_test_goal(bucket=bucket)
+
+        response = self.client.delete(f'/api/goal/{goal.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

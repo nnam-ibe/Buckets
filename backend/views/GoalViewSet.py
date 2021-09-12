@@ -51,7 +51,7 @@ class GoalViewSet(viewsets.ModelViewSet):
         record['_type'] = RecordType.GOAL
         return record
 
-    def update(self, request, *args, **kwargs):
+    def update(self, request, **kwargs):
         auth = Authorization(request)
         if auth.has_error():
             return auth.get_error_as_response()
@@ -77,3 +77,14 @@ class GoalViewSet(viewsets.ModelViewSet):
             goal._prefetched_objects_cache = {}
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, **kwargs):
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
+
+        pk = kwargs.get('pk', None)
+        queryset = Goal.objects.filter(bucket__user=auth.user).all()
+        get_object_or_404(queryset, pk=pk)
+
+        return super().destroy(request, **kwargs)
