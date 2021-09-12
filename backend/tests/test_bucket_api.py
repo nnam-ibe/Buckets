@@ -168,3 +168,34 @@ class BucketViewSetTestCase(APITestCase):
         }
         response = self.client.patch(f'/api/bucket/{buc2.id}/', payload2, format='json')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+
+    def test_delete_bucket(self):
+        """
+        Should be able to delete a bucket, and its goals
+        """
+        bucket = Utils.create_test_bucket(self.user)
+        goal = Utils.create_test_goal(bucket=bucket)
+
+        # test can retrieve created bucket and goal
+        response = self.client.get(f'/api/bucket/{bucket.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+        response = self.client.get(f'/api/goal/{goal.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+
+        response = self.client.delete(f'/api/bucket/{bucket.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT._value_)
+
+        # test cannot retrieve bucket or goal after bucket is deleted
+        response = self.client.get(f'/api/bucket/{bucket.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+        response = self.client.get(f'/api/goal/{goal.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
+
+    def test_cannot_delete_other_users_bucket(self):
+        """
+        Should not be able to delete another users bucket
+        """
+        bucket = Utils.create_test_bucket()
+
+        response = self.client.get(f'/api/bucket/{bucket.id}/')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)

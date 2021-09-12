@@ -76,3 +76,14 @@ class BucketViewSet(viewsets.ModelViewSet):
             bucket._prefetched_objects_cache = {}
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, **kwargs):
+        auth = Authorization(request)
+        if auth.has_error():
+            return auth.get_error_as_response()
+
+        pk = kwargs.get('pk', None)
+        queryset = Bucket.objects.filter(user=auth.user).all()
+        get_object_or_404(queryset, pk=pk)
+
+        return super().destroy(request, **kwargs)
