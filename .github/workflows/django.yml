@@ -1,0 +1,40 @@
+name: Djano Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    env:
+      BUCKETS_DB_USER: postgres
+      BUCKETS_DB_PASS: postgres
+      BUCKETS_DB_NAME: postgres
+      BUCKETS_DB_PORT: 5432
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+        
+    services:
+      postgres:
+        image: postgres:12.5
+        env:
+          POSTGRES_USER=${{ env.BUCKETS_DB_USER }}
+          POSTGRES_PASSWORD=${{ env.BUCKETS_DB_PASS }}
+          POSTGRES_DB=${{ env.BUCKETS_DB_NAME }}
+          POSTGRES_PORT=${{ env.BUCKETS_DB_PORT }}
+        
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        pip install pipenv
+        pipenv install --deploy --dev
+    - name: Run Tests
+      run: |
+        env | grep BUCKETS
+        python manage.py test
