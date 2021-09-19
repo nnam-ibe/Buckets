@@ -11,10 +11,6 @@ jobs:
       BUCKETS_DB_PORT: 5432
       BUCKETS_DB_HOST: localhost
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.9]
         
     services:
       postgres:
@@ -23,19 +19,24 @@ jobs:
           POSTGRES_USER: ${{ env.BUCKETS_DB_USER }}
           POSTGRES_PASSWORD: ${{ env.BUCKETS_DB_PASS }}
           POSTGRES_DB: ${{ env.BUCKETS_DB_NAME }}
-          POSTGRES_PORT: ${{ env.BUCKETS_DB_PORT }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.9
     - name: Install Dependencies
       run: |
         pip install pipenv
         pipenv install --deploy --dev
     - name: Run Tests
       run: |
-        env | grep BUCKETS
         pipenv run python manage.py test
