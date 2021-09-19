@@ -72,12 +72,24 @@ class BucketViewSetTestCase(APITestCase):
         """
         Should only be able to retrieve the buckets of the current user
         """
-        user_buckets = Utils.create_test_buckets(self.user)
+        user_buckets = Utils.create_test_buckets(self.user, len=3)
+        bucket_goals = [ 5, 3, 7]
+        Utils.create_test_goals(bucket=user_buckets[0], len=bucket_goals[0])
+        Utils.create_test_goals(bucket=user_buckets[1], len=bucket_goals[1])
+        Utils.create_test_goals(bucket=user_buckets[2], len=bucket_goals[2])
         other_buckets = Utils.create_test_buckets()
 
-        for buc in user_buckets:
+        for index, buc in enumerate(user_buckets):
             response = self.client.get(f'/api/bucket/{buc.id}/')
             self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+            data = response.data
+            self.assertIn('id', data)
+            self.assertIn('name', data)
+            self.assertIn('user', data)
+            self.assertIn('created_date', data)
+            self.assertIn('last_modified', data)
+            self.assertIn('goals', data)
+            self.assertEqual(len(data['goals']), bucket_goals[index])
 
         for buc in other_buckets:
             response = self.client.get(f'/api/bucket/{buc.id}/')

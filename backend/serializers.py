@@ -2,17 +2,6 @@ from rest_framework import serializers
 
 from .models import Bucket, Goal
 
-class BucketSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Bucket
-        fields = (
-            'id',
-            'name',
-            'user',
-            'created_date',
-            'last_modified',
-        )
-
 class GoalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Goal
@@ -27,4 +16,18 @@ class GoalSerializer(serializers.ModelSerializer):
             'bucket',
             'created_date',
             'last_modified',
+        )
+
+class BucketSerializer(serializers.ModelSerializer):
+    goals = GoalSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Bucket
+        fields = (
+            'id',
+            'name',
+            'user',
+            'created_date',
+            'last_modified',
+            'goals',
         )
