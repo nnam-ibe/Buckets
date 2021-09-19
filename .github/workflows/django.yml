@@ -9,6 +9,7 @@ jobs:
       BUCKETS_DB_PASS: postgres
       BUCKETS_DB_NAME: postgres
       BUCKETS_DB_PORT: 5432
+      BUCKETS_DB_HOST: localhost
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
