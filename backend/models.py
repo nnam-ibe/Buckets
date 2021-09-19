@@ -35,7 +35,7 @@ class Goal(models.Model):
         choices=CONTRIB_FREQUENCY,
         default=MONTHLY
     )
-    bucket = models.ForeignKey(Bucket, on_delete=models.CASCADE)
+    bucket = models.ForeignKey(Bucket, related_name='goals', on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return self.name
