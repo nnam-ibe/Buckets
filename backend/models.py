@@ -30,7 +30,7 @@ class Goal(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     contrib_amount = models.DecimalField(decimal_places=2, max_digits=9)
-    contrib_frequeny = models.CharField(
+    contrib_frequency = models.CharField(
         max_length=32,
         choices=CONTRIB_FREQUENCY,
         default=MONTHLY
