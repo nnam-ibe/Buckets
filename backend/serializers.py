@@ -12,7 +12,7 @@ class GoalSerializer(serializers.ModelSerializer):
             'amount_saved',
             'auto_update',
             'contrib_amount',
-            'contrib_frequeny',
+            'contrib_frequency',
             'bucket',
             'created_date',
             'last_modified',
