@@ -13,6 +13,11 @@ class Utils:
         return rand_str
 
     @staticmethod
+    def get_random_email():
+        username = Utils.get_random_string(len=5)
+        return username + '@test.localhost'
+
+    @staticmethod
     def create_test_user(username=None, password=None):
         if username is None:
             username = Utils.get_random_string()
@@ -21,6 +26,17 @@ class Utils:
 
         user = User.objects.create_user(username=username, password=password)
         return user
+
+    @staticmethod
+    def get_test_user_credentials():
+        username = Utils.get_random_string(len=10)
+        password = Utils.get_random_string(len=20)
+        email = Utils.get_random_email()
+        return {
+            'username': username,
+            'password': password,
+            'email': email,
+        }
 
     @staticmethod
     def create_test_bucket(user=None):

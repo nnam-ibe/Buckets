@@ -13,7 +13,7 @@ class GoalViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Goal.objects.filter(user=self.request.user).all()
+        return Goal.objects.filter(bucket__user=self.request.user).all()
 
     def create(self, request):
         auth = Authorization(request)
