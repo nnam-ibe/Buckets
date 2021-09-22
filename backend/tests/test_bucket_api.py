@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 
 from backend.models import Bucket
 from .utils import Utils
@@ -9,9 +9,19 @@ class BucketViewSetTestCase(APITestCase):
     user_name = 'testuser'
     user_pass = '123456'
 
-    def setUp(self):
-        self.user = Utils.create_test_user(self.user_name, self.user_pass)
-        self.client.login(username=self.user_name, password=self.user_pass)
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = Utils.create_test_user(cls.user_name, cls.user_pass)
+        login_payload = {
+            'username': cls.user_name,
+            'password': cls.user_pass,
+        }
+        client = APIClient()
+        res = client.post('/api/auth/login', login_payload, format='json')
+        cls.token = res.data['token']
+        cls.header_token = {
+            'HTTP_AUTHORIZATION': f'Token {cls.token}'
+        }
 
     def test_create_bucket(self):
         """
@@ -21,7 +31,7 @@ class BucketViewSetTestCase(APITestCase):
             'name': 'Test Saving Account',
             'user': self.user.id,
         }
-        response = self.client.post('/api/bucket/', payload, format='json')
+        response = self.client.post('/api/bucket/', payload, format='json', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.CREATED._value_)
         self.assertIn('id', response.data)
         self.assertEqual(response.data["name"], payload["name"])
@@ -35,23 +45,21 @@ class BucketViewSetTestCase(APITestCase):
             'name': 'Test Saving Account',
             'user': user.id,
         }
-        response = self.client.post('/api/bucket/', payload, format='json')
+        response = self.client.post('/api/bucket/', payload, format='json', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST._value_)
 
     def test_create_bucket_should_validate_user_logged_in(self):
         """
         Should only be able to create buckets when logged in
         """
-        self.client.logout()
         payload = {
             'name': 'Test Saving Account',
             'user': self.user.id,
         }
         response = self.client.post('/api/bucket/', payload, format='json')
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN._value_)
-        # should work after loggin in
-        self.client.login(username=self.user_name, password=self.user_pass)
-        response = self.client.post('/api/bucket/', payload, format='json')
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED._value_)
+
+        response = self.client.post('/api/bucket/', payload, format='json', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.CREATED._value_)
 
     def test_list_buckets(self):
@@ -63,7 +71,7 @@ class BucketViewSetTestCase(APITestCase):
         total_num_of_buckets = len(user_buckets) + len(other_buckets)
         self.assertEqual(Bucket.objects.count(), total_num_of_buckets)
 
-        response = self.client.get('/api/bucket/')
+        response = self.client.get('/api/bucket/', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.OK._value_)
         data = response.data
         self.assertEqual(len(data), len(user_buckets))
@@ -80,7 +88,7 @@ class BucketViewSetTestCase(APITestCase):
         other_buckets = Utils.create_test_buckets()
 
         for index, buc in enumerate(user_buckets):
-            response = self.client.get(f'/api/bucket/{buc.id}/')
+            response = self.client.get(f'/api/bucket/{buc.id}/', **self.header_token)
             self.assertEqual(response.status_code, HTTPStatus.OK._value_)
             data = response.data
             self.assertIn('id', data)
@@ -92,7 +100,7 @@ class BucketViewSetTestCase(APITestCase):
             self.assertEqual(len(data['goals']), bucket_goals[index])
 
         for buc in other_buckets:
-            response = self.client.get(f'/api/bucket/{buc.id}/')
+            response = self.client.get(f'/api/bucket/{buc.id}/', **self.header_token)
             self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
 
     def test_patch_bucket(self):
@@ -106,7 +114,7 @@ class BucketViewSetTestCase(APITestCase):
                 'id': buc.id,
                 'name': Utils.get_random_string(),
             }
-            response = self.client.patch(f'/api/bucket/{buc.id}/', payload, format='json')
+            response = self.client.patch(f'/api/bucket/{buc.id}/', payload, format='json', **self.header_token)
             self.assertEqual(response.status_code, HTTPStatus.OK._value_)
             self.assertEqual(response.data['id'], buc.id)
             self.assertEqual(response.data['name'], payload['name'])
@@ -123,7 +131,7 @@ class BucketViewSetTestCase(APITestCase):
                 'id': buc.id,
                 'name': Utils.get_random_string(),
             }
-            response = self.client.patch(f'/api/bucket/{buc.id}/', payload, format='json')
+            response = self.client.patch(f'/api/bucket/{buc.id}/', payload, format='json', **self.header_token)
             self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
 
     def test_put_bucket(self):
@@ -138,7 +146,7 @@ class BucketViewSetTestCase(APITestCase):
                 'name': Utils.get_random_string(),
                 'user': self.user.id,
             }
-            response = self.client.put(f'/api/bucket/{buc.id}/', payload, format='json')
+            response = self.client.put(f'/api/bucket/{buc.id}/', payload, format='json', **self.header_token)
             self.assertEqual(response.status_code, HTTPStatus.OK._value_)
             self.assertEqual(response.data['id'], buc.id)
             self.assertEqual(response.data['name'], payload['name'])
@@ -156,7 +164,7 @@ class BucketViewSetTestCase(APITestCase):
                 'name': Utils.get_random_string(),
                 'user': self.user.id,
             }
-            response = self.client.put(f'/api/bucket/{buc.id}/', payload, format='json')
+            response = self.client.put(f'/api/bucket/{buc.id}/', payload, format='json', **self.header_token)
             self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
 
     def test_cannot_change_bucket_user(self):
@@ -170,7 +178,7 @@ class BucketViewSetTestCase(APITestCase):
             'id': buc1.id,
             'user': user1.id,
         }
-        response = self.client.patch(f'/api/bucket/{buc1.id}/', payload1, format='json')
+        response = self.client.patch(f'/api/bucket/{buc1.id}/', payload1, format='json', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST._value_)
 
         buc2 = Utils.create_test_bucket(user1)
@@ -178,7 +186,7 @@ class BucketViewSetTestCase(APITestCase):
             'id': buc2.id,
             'user': self.user.id,
         }
-        response = self.client.patch(f'/api/bucket/{buc2.id}/', payload2, format='json')
+        response = self.client.patch(f'/api/bucket/{buc2.id}/', payload2, format='json', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
 
     def test_delete_bucket(self):
@@ -189,18 +197,18 @@ class BucketViewSetTestCase(APITestCase):
         goal = Utils.create_test_goal(bucket=bucket)
 
         # test can retrieve created bucket and goal
-        response = self.client.get(f'/api/bucket/{bucket.id}/')
+        response = self.client.get(f'/api/bucket/{bucket.id}/', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.OK._value_)
-        response = self.client.get(f'/api/goal/{goal.id}/')
+        response = self.client.get(f'/api/goal/{goal.id}/', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.OK._value_)
 
-        response = self.client.delete(f'/api/bucket/{bucket.id}/')
+        response = self.client.delete(f'/api/bucket/{bucket.id}/', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT._value_)
 
         # test cannot retrieve bucket or goal after bucket is deleted
-        response = self.client.get(f'/api/bucket/{bucket.id}/')
+        response = self.client.get(f'/api/bucket/{bucket.id}/', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
-        response = self.client.get(f'/api/goal/{goal.id}/')
+        response = self.client.get(f'/api/goal/{goal.id}/', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
 
     def test_cannot_delete_other_users_bucket(self):
@@ -209,7 +217,7 @@ class BucketViewSetTestCase(APITestCase):
         """
         bucket = Utils.create_test_bucket()
 
-        response = self.client.get(f'/api/bucket/{bucket.id}/')
+        response = self.client.get(f'/api/bucket/{bucket.id}/', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)
 
     def test_get_bucket_goals(self):
@@ -219,7 +227,7 @@ class BucketViewSetTestCase(APITestCase):
         bucket = Utils.create_test_bucket(self.user)
         goals = Utils.create_test_goals(bucket=bucket, len=3)
 
-        response = self.client.get(f'/api/bucket/{bucket.id}/goals/')
+        response = self.client.get(f'/api/bucket/{bucket.id}/goals/', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.OK._value_)
         self.assertEqual(len(response.data), len(goals))
 
@@ -230,5 +238,5 @@ class BucketViewSetTestCase(APITestCase):
         bucket = Utils.create_test_bucket()
         goals = Utils.create_test_goals(bucket=bucket, len=3)
 
-        response = self.client.get(f'/api/bucket/{bucket.id}/goals/')
+        response = self.client.get(f'/api/bucket/{bucket.id}/goals/', **self.header_token)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND._value_)

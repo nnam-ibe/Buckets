@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
 
 from ..serializers import GoalSerializer
@@ -10,6 +10,10 @@ from ..lib.authorization import Authorization, Action, RecordType
 class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     serializer_class = GoalSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Goal.objects.filter(bucket__user=self.request.user).all()
 
     def create(self, request):
         auth = Authorization(request)
