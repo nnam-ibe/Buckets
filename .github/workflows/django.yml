@@ -38,7 +38,6 @@ jobs:
         cd backend
         pip install pipenv
         pipenv install --deploy --dev
-        cd ../
     - name: Run Tests
       run: |
-        pipenv make run-tests
+        pipenv run python manage.py test
