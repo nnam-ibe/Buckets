@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'backend.apps.BackendConfig',
+    'business_logic.apps.BusinessLogicConfig',
     'knox',
     'accounts',
 ]

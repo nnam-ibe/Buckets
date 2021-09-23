@@ -3,7 +3,7 @@ import string
 
 from django.contrib.auth.models import User
 
-from backend.models import Bucket, Goal
+from business_logic.models import Bucket, Goal
 
 class Utils:
     @staticmethod

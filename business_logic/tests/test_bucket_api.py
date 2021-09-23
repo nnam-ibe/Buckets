@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from rest_framework.test import APITestCase, APIClient
 
-from backend.models import Bucket
+from business_logic.models import Bucket
 from .utils import Utils
 
 class BucketViewSetTestCase(APITestCase):
