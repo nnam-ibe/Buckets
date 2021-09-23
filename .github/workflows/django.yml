@@ -35,8 +35,10 @@ jobs:
         python-version: 3.9
     - name: Install Dependencies
       run: |
+        cd backend
         pip install pipenv
         pipenv install --deploy --dev
+        cd ../
     - name: Run Tests
       run: |
         pipenv make run-tests
