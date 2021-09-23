@@ -1,4 +1,4 @@
-name: Djano Tests
+name: Django Tests
 
 on: [push, pull_request]
 
@@ -11,7 +11,7 @@ jobs:
       BUCKETS_DB_PORT: 5432
       BUCKETS_DB_HOST: localhost
     runs-on: ubuntu-latest
-        
+
     services:
       postgres:
         image: postgres:12.5
@@ -26,7 +26,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
@@ -39,4 +39,4 @@ jobs:
         pipenv install --deploy --dev
     - name: Run Tests
       run: |
-        pipenv run python manage.py test
+        pipenv make run-tests
