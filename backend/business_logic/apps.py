@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
-class BackendConfig(AppConfig):
+class BusinessLogicConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'backend'
+    name = 'business_logic'

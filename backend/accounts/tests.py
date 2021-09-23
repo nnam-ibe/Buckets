@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from rest_framework.test import APITestCase
 
-from backend.tests.utils import Utils
+from business_logic.tests.utils import Utils
 
 class AuthenticationAPITestCase(APITestCase):
 

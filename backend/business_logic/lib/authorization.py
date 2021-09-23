@@ -4,7 +4,7 @@ from typing import Dict
 from django.http.response import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from backend.Exceptions import UserNotFoundError, InvalidRequestError
+from business_logic.Exceptions import UserNotFoundError, InvalidRequestError
 from ..models import Bucket
 
 class RecordType(Enum):
