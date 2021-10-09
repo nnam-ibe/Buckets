@@ -3,6 +3,18 @@ name: Django Tests
 on: [push, pull_request]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Dependencies
+      run: |
+        cd backend
+        pip install pipenv
+        pipenv install --dev
+    - name: Lint Code
+      run: |
+        make lint
+
   build:
     env:
       BUCKETS_DB_USER: postgres
