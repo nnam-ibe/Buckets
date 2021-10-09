@@ -20,3 +20,6 @@ lint:
 
 format:
 	PIPENV_PIPFILE=$(PIPENV_PIPFILE_PATH) pipenv run black ./backend
+
+pipenv-run:
+	PIPENV_PIPFILE=$(PIPENV_PIPFILE_PATH) pipenv run $(cmd)
