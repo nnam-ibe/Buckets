@@ -1,8 +1,23 @@
 enum ContributionFrequency {
-  semiMonthly,
   monthly,
   biWeekly,
+  weekly,
   na,
+}
+
+ContributionFrequency parseContribFreq(String contrib) {
+  switch (contrib) {
+    case 'MONTHLY':
+      return ContributionFrequency.monthly;
+    case 'BI_WEEKLY':
+      return ContributionFrequency.biWeekly;
+    case 'WEEKLY':
+      return ContributionFrequency.weekly;
+    case 'NA':
+      return ContributionFrequency.na;
+    default:
+      throw Exception('Contribution Frequency not found');
+  }
 }
 
 class Goal {
@@ -120,19 +135,24 @@ class Goal {
 
   factory Goal.fromMap(Map<String, dynamic> map) {
     return Goal(
-      id: map['id'] as int,
-      bucketId: map['bucket'] as int,
+      id: map['id'],
+      bucketId: map['bucket'],
       name: map['name'] as String,
-      goalAmount: map['goal_amount'] as double,
-      amountSaved: map['amount_saved'] as double,
-      contribAmount: map['contrib_amount'] as double,
-      contribFrequency: map['contrib_frequency'] as ContributionFrequency,
+      goalAmount: double.parse(map['goal_amount']),
+      amountSaved: double.parse(map['amount_saved']),
+      contribAmount: double.parse(map['contrib_amount']),
+      contribFrequency: parseContribFreq(map['contrib_frequency']),
       autoUpdate: map['auto_update'] as bool,
-      createdDate: map['created_date'] as DateTime,
-      lastModified: map['last_modified'] as DateTime,
+      createdDate: DateTime.parse(map['created_date']),
+      lastModified: DateTime.parse(map['last_modified']),
     );
   }
 
-//</editor-fold>
+  static List<Goal> fromMapList(List<dynamic> mapGoals) {
+    var goals = <Goal>[];
+    for (var element in mapGoals) {
+      goals.add(Goal.fromMap(element));
+    }
+    return goals;
+  }
 }
-

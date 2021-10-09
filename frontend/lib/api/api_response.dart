@@ -24,7 +24,7 @@ class ApiResponse {
     if (wasSuccessful()) {
       throw Exception("Response was successful");
     }
-    return _reasonPhrase?? "Internal Server Error";
+    return _reasonPhrase ?? "Internal Server Error";
   }
 
   void _validateData() {

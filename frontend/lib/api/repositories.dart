@@ -11,18 +11,13 @@ class Repositories {
   Repositories({required this.token});
 
   Future<List<Bucket>> getBuckets() async {
-    ApiResponse apiResponse = await apiClient.get(endpoint: 'bucket/', token: token);
+    ApiResponse apiResponse =
+        await apiClient.get(endpoint: 'bucket/', token: token);
     if (!apiResponse.wasSuccessful()) {
       // TODO: Handle response errors
       return <Bucket>[];
     }
 
-    var mapBuckets = apiResponse.getDataAsList();
-    var buckets = <Bucket>[];
-    for (var element in mapBuckets) {
-      buckets.add(Bucket.fromMap(element));
-    }
-    return buckets;
+    return Bucket.fromMapList(apiResponse.getDataAsList());
   }
-
 }

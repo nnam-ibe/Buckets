@@ -46,12 +46,16 @@ class _LoginPageState extends State<LoginPage> {
   void onLoginClick() async {
     if (_formKey.currentState!.validate()) {
       var authClient = AuthClient();
-      ApiResponse apiResponse = await authClient.login(username: usernameController.text, password: passwordController.text);
+      ApiResponse apiResponse = await authClient.login(
+          username: usernameController.text, password: passwordController.text);
       if (apiResponse.wasSuccessful()) {
         var responseData = apiResponse.getDataAsMap();
         var user = User.fromMap(responseData['user']);
         String token = responseData['token'];
-        Provider.of<UserSession>(context, listen: false,).setUser(user: user, token: token);
+        Provider.of<UserSession>(
+          context,
+          listen: false,
+        ).setUser(user: user, token: token);
         Navigator.of(context).pushNamed('/buckets');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

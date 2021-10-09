@@ -5,7 +5,7 @@ import 'package:frontend/api/repositories.dart';
 import 'package:provider/provider.dart';
 
 class BucketsPage extends StatefulWidget {
-  const BucketsPage({ Key? key }) : super(key: key);
+  const BucketsPage({Key? key}) : super(key: key);
 
   @override
   _BucketsPageState createState() => _BucketsPageState();
@@ -17,7 +17,10 @@ class _BucketsPageState extends State<BucketsPage> {
   @override
   void initState() {
     super.initState();
-    String? token = Provider.of<UserSession>(context, listen: false,).token;
+    String? token = Provider.of<UserSession>(
+      context,
+      listen: false,
+    ).token;
     if (token != null) {
       futureBuckets = getBuckets(token);
     } else {

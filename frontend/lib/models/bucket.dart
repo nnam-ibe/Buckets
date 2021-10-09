@@ -83,14 +83,20 @@ class Bucket {
 
   factory Bucket.fromMap(Map<String, dynamic> map) {
     return Bucket(
-      id: map['id'] as int,
-      userId: map['user'] as int,
+      id: map['id'],
+      userId: map['user'],
       name: map['name'] as String,
-      createdDate: map['created_date'] as DateTime,
-      lastModified: map['last_modified'] as DateTime,
-      goals: map['goals'] as List<Goal>,
+      createdDate: DateTime.parse(map['created_date']),
+      lastModified: DateTime.parse(map['last_modified']),
+      goals: Goal.fromMapList(map['goals']),
     );
   }
 
-//</editor-fold>
+  static List<Bucket> fromMapList(List<dynamic> mapBuckets) {
+    var buckets = <Bucket>[];
+    for (var element in mapBuckets) {
+      buckets.add(Bucket.fromMap(element));
+    }
+    return buckets;
+  }
 }
