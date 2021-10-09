@@ -1,3 +1,5 @@
+PIPENV_PIPFILE_PATH?=./backend/Pipfile
+
 make-migrations:
 	python ./backend/manage.py makemigrations
 
@@ -12,3 +14,9 @@ run-server:
 
 run-tests:
 	python ./backend/manage.py test ./backend
+
+lint:
+	PIPENV_PIPFILE=$(PIPENV_PIPFILE_PATH) pipenv run black --check ./backend
+
+format:
+	PIPENV_PIPFILE=$(PIPENV_PIPFILE_PATH) pipenv run black ./backend

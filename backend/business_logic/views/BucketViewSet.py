@@ -8,6 +8,7 @@ from ..serializers import BucketSerializer, GoalSerializer
 from ..models import Bucket, Goal
 from ..lib.authorization import Authorization, Action, RecordType
 
+
 class BucketViewSet(viewsets.ModelViewSet):
     queryset = Bucket.objects.all()
     serializer_class = BucketSerializer
@@ -53,7 +54,7 @@ class BucketViewSet(viewsets.ModelViewSet):
 
     def _get_auth_record(self, serializer):
         record = serializer.validated_data.copy()
-        record['_type'] = RecordType.BUCKET
+        record["_type"] = RecordType.BUCKET
         return record
 
     def update(self, request, **kwargs):
@@ -61,8 +62,8 @@ class BucketViewSet(viewsets.ModelViewSet):
         if auth.has_error():
             return auth.get_error_as_response()
 
-        partial = kwargs.get('partial', False)
-        pk = kwargs.get('pk', None)
+        partial = kwargs.get("partial", False)
+        pk = kwargs.get("pk", None)
         queryset = Bucket.objects.filter(user=auth.user)
         bucket = get_object_or_404(queryset, pk=pk)
 
@@ -75,7 +76,7 @@ class BucketViewSet(viewsets.ModelViewSet):
 
         self.perform_update(serializer)
 
-        if getattr(bucket, '_prefetched_objects_cache', None):
+        if getattr(bucket, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the bucket.
             bucket._prefetched_objects_cache = {}
@@ -87,13 +88,13 @@ class BucketViewSet(viewsets.ModelViewSet):
         if auth.has_error():
             return auth.get_error_as_response()
 
-        pk = kwargs.get('pk', None)
+        pk = kwargs.get("pk", None)
         queryset = Bucket.objects.filter(user=auth.user).all()
         get_object_or_404(queryset, pk=pk)
 
         return super().destroy(request, **kwargs)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
     def goals(self, request, pk):
         auth = Authorization(request)
         if auth.has_error():

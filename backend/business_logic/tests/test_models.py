@@ -5,14 +5,15 @@ from django.contrib.auth.models import User
 from business_logic.models import Bucket
 from business_logic.models import Goal
 
+
 class BucketTestCase(TestCase):
     def setUp(self):
-        username = 'testuser'
-        password = '123456'
+        username = "testuser"
+        password = "123456"
         self.user = User.objects.create_user(username=username, password=password)
 
     def test_create_bucket(self):
-        name = 'TD Savings Account'
+        name = "TD Savings Account"
         bucket = Bucket.objects.create(name=name, user=self.user)
         self.assertEqual(bucket.name, name)
         self.assertEqual(bucket.user, self.user)
@@ -37,5 +38,7 @@ class BucketTestCase(TestCase):
         self.assertIsNotNone(Goal.objects.get(name=goal_args["name"]))
         self.assertIsNotNone(Goal.objects.get(goal_amount=goal_args["goal_amount"]))
         self.assertIsNotNone(Goal.objects.get(amount_saved=goal_args["amount_saved"]))
-        self.assertIsNotNone(Goal.objects.get(contrib_amount=goal_args["contrib_amount"]))
+        self.assertIsNotNone(
+            Goal.objects.get(contrib_amount=goal_args["contrib_amount"])
+        )
         self.assertIsNotNone(Goal.objects.get(bucket=goal_args["bucket"]))
