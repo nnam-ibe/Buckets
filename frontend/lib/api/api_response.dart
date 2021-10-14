@@ -16,6 +16,11 @@ class ApiResponse {
     }
   }
 
+  ApiResponse.fromError(reasonPhrase) {
+    _statusCode = 400;
+    _reasonPhrase = reasonPhrase;
+  }
+
   bool wasSuccessful() {
     return _statusCode >= 200 && _statusCode < 300;
   }

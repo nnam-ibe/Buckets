@@ -128,9 +128,17 @@ class Goal {
       'contrib_amount': contribAmount,
       'contrib_frequency': contribFrequency,
       'auto_update': autoUpdate,
-      'created_date': createdDate,
-      'last_modified': lastModified,
+      'created_date': createdDate.toString(),
+      'last_modified': lastModified.toString(),
     };
+  }
+
+  static List<Map<String, dynamic>> toMapList(List<Goal> goals) {
+    List<Map<String, dynamic>> mappedGoals = [];
+    for (var goal in goals) {
+      mappedGoals.add(goal.toMap());
+    }
+    return mappedGoals;
   }
 
   factory Goal.fromMap(Map<String, dynamic> map) {
@@ -154,5 +162,13 @@ class Goal {
       goals.add(Goal.fromMap(element));
     }
     return goals;
+  }
+
+  double getProgress() {
+    return amountSaved / goalAmount;
+  }
+
+  String getProgressString() {
+    return "\$$amountSaved / \$$goalAmount";
   }
 }

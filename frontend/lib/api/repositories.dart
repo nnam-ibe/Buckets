@@ -20,4 +20,11 @@ class Repositories {
 
     return Bucket.fromMapList(apiResponse.getDataAsList());
   }
+
+  Future<ApiResponse> saveBucket(Bucket bucket) async {
+    return await apiClient.put(
+        endpoint: "bucket/${bucket.id}/",
+        token: token,
+        payload: bucket.toMap());
+  }
 }

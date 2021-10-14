@@ -75,9 +75,9 @@ class Bucket {
       'id': id,
       'user': userId,
       'name': name,
-      'created_date': createdDate,
-      'last_modified': lastModified,
-      'goals': goals,
+      'created_date': createdDate.toString(),
+      'last_modified': lastModified.toString(),
+      'goals': Goal.toMapList(goals),
     };
   }
 
@@ -98,5 +98,25 @@ class Bucket {
       buckets.add(Bucket.fromMap(element));
     }
     return buckets;
+  }
+
+  double getTotalSaved() {
+    double sum = 0;
+    for (var goal in goals) {
+      sum += goal.amountSaved;
+    }
+    return sum;
+  }
+
+  double getTotalGoalAmoun() {
+    double sum = 0;
+    for (var goal in goals) {
+      sum += goal.goalAmount;
+    }
+    return sum;
+  }
+
+  String getProgressString() {
+    return "\$${getTotalSaved()} / \$${getTotalGoalAmoun()}";
   }
 }

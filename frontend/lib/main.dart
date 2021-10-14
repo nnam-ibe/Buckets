@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/bucket_form_page.dart';
 import 'package:frontend/pages/buckets_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,8 +30,9 @@ class MyApp extends StatelessWidget {
       theme: appTheme,
       initialRoute: '/',
       routes: {
-        '/': (context) => const LoginPage(),
-        '/buckets': (context) => const BucketsPage(),
+        LoginPage.routeName: (context) => const LoginPage(),
+        BucketsPage.routeName: (context) => const BucketsPage(),
+        BucketFormPage.routeName: (context) => const BucketFormPage(),
       },
     );
   }

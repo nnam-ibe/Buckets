@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api/authentication/session.dart';
 import 'package:frontend/models/bucket.dart';
 import 'package:frontend/api/repositories.dart';
+import 'package:frontend/pages/authentication/login_page.dart';
 import 'package:provider/provider.dart';
+import 'package:frontend/pages/widgets/bucket_widget.dart';
 
 class BucketsPage extends StatefulWidget {
+  static const routeName = '/buckets';
   const BucketsPage({Key? key}) : super(key: key);
 
   @override
@@ -24,7 +27,8 @@ class _BucketsPageState extends State<BucketsPage> {
     if (token != null) {
       futureBuckets = getBuckets(token);
     } else {
-      futureBuckets = Future.value(<Bucket>[]);
+      // TODO: state-management this should be somewhere else
+      Navigator.of(context).pushNamed(LoginPage.routeName);
     }
   }
 
@@ -38,14 +42,17 @@ class _BucketsPageState extends State<BucketsPage> {
       future: futureBuckets,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: snapshot.data?.length,
+          return ListView.separated(
+            separatorBuilder: (context, index) => const Divider(),
+            itemCount: snapshot.data?.length ?? 0,
             itemBuilder: (context, index) {
-              return Text(snapshot.data![index].name);
+              return BucketWidget(bucket: snapshot.data![index]);
             },
           );
         } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('${snapshot.error}'),
+          ));
         }
         return const CircularProgressIndicator();
       },

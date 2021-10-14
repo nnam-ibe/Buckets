@@ -3,9 +3,12 @@ import 'package:frontend/api/api_response.dart';
 import 'package:frontend/api/authentication/auth_client.dart';
 import 'package:frontend/api/authentication/session.dart';
 import 'package:frontend/models/user.dart';
+import 'package:frontend/pages/buckets_page.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
+  static const routeName = '/';
+
   const LoginPage({Key? key}) : super(key: key);
 
   @override
@@ -56,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
           context,
           listen: false,
         ).setUser(user: user, token: token);
-        Navigator.of(context).pushNamed('/buckets');
+        Navigator.of(context).pushNamed(BucketsPage.routeName);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(apiResponse.getError())),
