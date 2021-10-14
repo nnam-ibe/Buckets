@@ -13,10 +13,17 @@ class BucketWidget extends StatefulWidget {
 
 class _BucketWidgetState extends State<BucketWidget> {
   bool showButtonTray = false;
+  late Bucket _bucket;
+
+  @override
+  initState() {
+    super.initState();
+    _bucket = widget.bucket;
+  }
 
   List<GoalWidget> getGoals() {
     var goalWidgets = <GoalWidget>[];
-    for (var goal in widget.bucket.goals) {
+    for (var goal in _bucket.goals) {
       goalWidgets.add(GoalWidget(goal: goal));
     }
     return goalWidgets;
@@ -28,6 +35,16 @@ class _BucketWidgetState extends State<BucketWidget> {
     });
   }
 
+  void editBucket() async {
+    Bucket? _updatedBucket = await Navigator.of(context)
+        .pushNamed(BucketFormPage.routeName, arguments: _bucket) as Bucket?;
+    if (_updatedBucket != null) {
+      setState(() {
+        _bucket = _updatedBucket;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -36,19 +53,17 @@ class _BucketWidgetState extends State<BucketWidget> {
         ListTile(
           leading: const Icon(Icons.arrow_drop_down),
           onTap: toggleButtonTray,
-          title: Text(widget.bucket.name),
-          trailing: Text(widget.bucket.getProgressString()),
+          title: Text(_bucket.name),
+          trailing: Text(_bucket.getProgressString()),
         ),
         Visibility(
             visible: showButtonTray,
             child: ButtonBar(
               children: [
                 ElevatedButton(
-                    child: const Text('Edit'),
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(BucketFormPage.routeName,
-                          arguments: widget.bucket);
-                    }),
+                  child: const Text('Edit'),
+                  onPressed: editBucket,
+                ),
                 ElevatedButton(child: const Text('Add Goal'), onPressed: () {})
               ],
             )),

@@ -53,7 +53,8 @@ class _BucketFormPageState extends State<BucketFormPage> {
     Repositories repositories = Repositories(token: token!);
     ApiResponse apiResponse = await repositories.saveBucket(bucket!);
     if (apiResponse.wasSuccessful()) {
-      Navigator.of(context).pop();
+      Bucket updatedBucket = Bucket.fromMap(apiResponse.getDataAsMap());
+      Navigator.of(context).pop(updatedBucket);
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(

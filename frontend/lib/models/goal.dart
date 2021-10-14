@@ -1,24 +1,4 @@
-enum ContributionFrequency {
-  monthly,
-  biWeekly,
-  weekly,
-  na,
-}
-
-ContributionFrequency parseContribFreq(String contrib) {
-  switch (contrib) {
-    case 'MONTHLY':
-      return ContributionFrequency.monthly;
-    case 'BI_WEEKLY':
-      return ContributionFrequency.biWeekly;
-    case 'WEEKLY':
-      return ContributionFrequency.weekly;
-    case 'NA':
-      return ContributionFrequency.na;
-    default:
-      throw Exception('Contribution Frequency not found');
-  }
-}
+import 'package:frontend/models/contribution_frequency.dart';
 
 class Goal {
   int id;
@@ -126,7 +106,7 @@ class Goal {
       'goal_amount': goalAmount,
       'amount_saved': amountSaved,
       'contrib_amount': contribAmount,
-      'contrib_frequency': contribFrequency,
+      'contrib_frequency': contribFreqToString(contribFrequency),
       'auto_update': autoUpdate,
       'created_date': createdDate.toString(),
       'last_modified': lastModified.toString(),
@@ -149,7 +129,7 @@ class Goal {
       goalAmount: double.parse(map['goal_amount']),
       amountSaved: double.parse(map['amount_saved']),
       contribAmount: double.parse(map['contrib_amount']),
-      contribFrequency: parseContribFreq(map['contrib_frequency']),
+      contribFrequency: stringToContribFreq(map['contrib_frequency']),
       autoUpdate: map['auto_update'] as bool,
       createdDate: DateTime.parse(map['created_date']),
       lastModified: DateTime.parse(map['last_modified']),
