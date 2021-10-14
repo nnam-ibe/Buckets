@@ -100,16 +100,16 @@ class Goal {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'bucket': bucketId,
-      'name': name,
-      'goal_amount': goalAmount,
-      'amount_saved': amountSaved,
-      'contrib_amount': contribAmount,
+      'id': id.toString(),
+      'bucket': bucketId.toString(),
+      'name': name.toString(),
+      'goal_amount': goalAmount.toString(),
+      'amount_saved': amountSaved.toString(),
+      'contrib_amount': contribAmount.toString(),
       'contrib_frequency': contribFreqToString(contribFrequency),
-      'auto_update': autoUpdate,
-      'created_date': createdDate.toString(),
-      'last_modified': lastModified.toString(),
+      'auto_update': autoUpdate.toString(),
+      'created_date': createdDate.toIso8601String(),
+      'last_modified': lastModified.toIso8601String(),
     };
   }
 
@@ -123,14 +123,18 @@ class Goal {
 
   factory Goal.fromMap(Map<String, dynamic> map) {
     return Goal(
-      id: map['id'],
-      bucketId: map['bucket'],
+      id: map['id'].runtimeType == int ? map['id'] : int.parse(map['id']),
+      bucketId: map['bucket'].runtimeType == int
+          ? map['bucket']
+          : int.parse(map['bucket']),
       name: map['name'] as String,
       goalAmount: double.parse(map['goal_amount']),
       amountSaved: double.parse(map['amount_saved']),
       contribAmount: double.parse(map['contrib_amount']),
       contribFrequency: stringToContribFreq(map['contrib_frequency']),
-      autoUpdate: map['auto_update'] as bool,
+      autoUpdate: map['auto_update'].runtimeType == bool
+          ? map['auto_update']
+          : map['auto_update'].toLowerCase() == 'true',
       createdDate: DateTime.parse(map['created_date']),
       lastModified: DateTime.parse(map['last_modified']),
     );
