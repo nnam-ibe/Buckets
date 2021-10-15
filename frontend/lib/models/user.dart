@@ -50,9 +50,9 @@ class User {
     if (identical(this, other)) return true;
 
     return other is User &&
-      other.id == id &&
-      other.username == username &&
-      other.email == email;
+        other.id == id &&
+        other.username == username &&
+        other.email == email;
   }
 
   @override
