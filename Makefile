@@ -16,6 +16,7 @@ run-tests:
 
 lint:
 	$(MAKE) -C backend lint
+	$(MAKE) -C frontend lint
 
 format:
 	$(MAKE) -C backend format
