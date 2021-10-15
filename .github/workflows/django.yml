@@ -3,6 +3,23 @@ name: Django Tests
 on: [push, pull_request]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install Dependencies
+      working-directory: ./backend
+      run: |
+        pip install pipenv
+        pipenv install --dev
+    - name: Lint Code
+      run: |
+        make lint
+
   build:
     env:
       BUCKETS_DB_USER: postgres

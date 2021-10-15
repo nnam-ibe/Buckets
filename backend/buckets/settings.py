@@ -20,80 +20,90 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c5@=1=^y)rvum*ocv!6wuklv9b3u$)vf+iv+w!uev4@v2#54a%'
+SECRET_KEY = "django-insecure-c5@=1=^y)rvum*ocv!6wuklv9b3u$)vf+iv+w!uev4@v2#54a%"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get('DEBUG', 0)))
+DEBUG = bool(int(os.environ.get("DEBUG", 0)))
 
 ALLOWED_HOSTS = []
+# Setting
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'business_logic.apps.BusinessLogicConfig',
-    'knox',
-    'accounts',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "business_logic.apps.BusinessLogicConfig",
+    "knox",
+    "accounts",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'buckets.urls'
+ROOT_URLCONF = "buckets.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'buckets.wsgi.application'
+WSGI_APPLICATION = "buckets.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 # Environment variables
-BUCKETS_DB_NAME = os.environ.get('BUCKETS_DB_NAME')
-BUCKETS_DB_USER = os.environ.get('BUCKETS_DB_USER')
-BUCKETS_DB_PASS = os.environ.get('BUCKETS_DB_PASS')
-BUCKETS_DB_HOST = os.environ.get('BUCKETS_DB_HOST')
-BUCKETS_DB_PORT = os.environ.get('BUCKETS_DB_PORT')
+BUCKETS_DB_NAME = os.environ.get("BUCKETS_DB_NAME")
+BUCKETS_DB_USER = os.environ.get("BUCKETS_DB_USER")
+BUCKETS_DB_PASS = os.environ.get("BUCKETS_DB_PASS")
+BUCKETS_DB_HOST = os.environ.get("BUCKETS_DB_HOST")
+BUCKETS_DB_PORT = os.environ.get("BUCKETS_DB_PORT")
 
-if None in [BUCKETS_DB_NAME, BUCKETS_DB_USER, BUCKETS_DB_PASS, BUCKETS_DB_HOST, BUCKETS_DB_PORT]:
-    raise Exception('environment variables not exported')
+if None in [
+    BUCKETS_DB_NAME,
+    BUCKETS_DB_USER,
+    BUCKETS_DB_PASS,
+    BUCKETS_DB_HOST,
+    BUCKETS_DB_PORT,
+]:
+    raise Exception("environment variables not exported")
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': BUCKETS_DB_NAME,
-        'USER': BUCKETS_DB_USER,
-        'PASSWORD': BUCKETS_DB_PASS,
-        'HOST': BUCKETS_DB_HOST,
-        'PORT': BUCKETS_DB_PORT,
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": BUCKETS_DB_NAME,
+        "USER": BUCKETS_DB_USER,
+        "PASSWORD": BUCKETS_DB_PASS,
+        "HOST": BUCKETS_DB_HOST,
+        "PORT": BUCKETS_DB_PORT,
     }
 }
 
@@ -103,30 +113,30 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 # Permission
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("knox.auth.TokenAuthentication",),
 }
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'America/Toronto'
+TIME_ZONE = "America/Toronto"
 
 USE_I18N = True
 
@@ -138,9 +148,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -1,14 +1,25 @@
 make-migrations:
-	python ./backend/manage.py makemigrations
+	$(MAKE) -C backend make-migrations
 
 migrate:
-	python ./backend/manage.py migrate
+	$(MAKE) -C backend migrate
 
 db-login:
-	PGPASSWORD=$(BUCKETS_DB_PASS) psql -U $(BUCKETS_DB_USER) -h $(BUCKETS_DB_HOST) $(BUCKETS_DB_NAME) --port $(BUCKETS_DB_PORT)
+	$(MAKE) -C backend db-login
 
 run-server:
-	python ./backend/manage.py runserver
+	$(MAKE) -C backend run-server
 
 run-tests:
-	python ./backend/manage.py test ./backend
+	$(MAKE) -C backend run-tests
+	$(MAKE) -C frontend run-tests
+
+lint:
+	$(MAKE) -C backend lint
+
+format:
+	$(MAKE) -C backend format
+	$(MAKE) -C frontend format
+
+pipenv-run:
+	$(MAKE) -C backend pipenv-run

@@ -7,6 +7,7 @@ from ..serializers import GoalSerializer
 from ..models import Goal
 from ..lib.authorization import Authorization, Action, RecordType
 
+
 class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     serializer_class = GoalSerializer
@@ -23,7 +24,7 @@ class GoalViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         record = serializer.validated_data.copy()
-        record['user'] = record.get('bucket').user
+        record["user"] = record.get("bucket").user
         if not auth.authorize(action=Action.CREATE, record=record):
             return auth.get_error_as_response()
 
@@ -52,7 +53,7 @@ class GoalViewSet(viewsets.ModelViewSet):
 
     def _get_auth_record(self, serializer):
         record = serializer.validated_data.copy()
-        record['_type'] = RecordType.GOAL
+        record["_type"] = RecordType.GOAL
         return record
 
     def update(self, request, **kwargs):
@@ -60,9 +61,11 @@ class GoalViewSet(viewsets.ModelViewSet):
         if auth.has_error():
             return auth.get_error_as_response()
 
-        partial = kwargs.get('partial', False)
-        pk = kwargs.get('pk', None)
-        queryset = Goal.objects.filter(bucket__user=auth.user).select_related('bucket').all()
+        partial = kwargs.get("partial", False)
+        pk = kwargs.get("pk", None)
+        queryset = (
+            Goal.objects.filter(bucket__user=auth.user).select_related("bucket").all()
+        )
         goal = get_object_or_404(queryset, pk=pk)
 
         serializer = self.get_serializer(goal, data=request.data, partial=partial)
@@ -75,7 +78,7 @@ class GoalViewSet(viewsets.ModelViewSet):
 
         self.perform_update(serializer)
 
-        if getattr(goal, '_prefetched_objects_cache', None):
+        if getattr(goal, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the goal.
             goal._prefetched_objects_cache = {}
@@ -87,7 +90,7 @@ class GoalViewSet(viewsets.ModelViewSet):
         if auth.has_error():
             return auth.get_error_as_response()
 
-        pk = kwargs.get('pk', None)
+        pk = kwargs.get("pk", None)
         queryset = Goal.objects.filter(bucket__user=auth.user).all()
         get_object_or_404(queryset, pk=pk)
 

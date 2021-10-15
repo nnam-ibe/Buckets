@@ -7,19 +7,21 @@ from django.core.exceptions import ObjectDoesNotExist
 from business_logic.Exceptions import UserNotFoundError, InvalidRequestError
 from ..models import Bucket
 
+
 class RecordType(Enum):
-    GOAL = 'GOAL'
-    BUCKET = 'BUCKET'
+    GOAL = "GOAL"
+    BUCKET = "BUCKET"
+
 
 class Action(Enum):
-    CREATE = 'create'
-    UPDATE = 'update'
-    DELETE = 'delete'
-    VIEW = 'view'
-    LIST = 'list'
+    CREATE = "create"
+    UPDATE = "update"
+    DELETE = "delete"
+    VIEW = "view"
+    LIST = "list"
 
 
-class Authorization():
+class Authorization:
     error = None
     user = None
     request_data = None
@@ -53,20 +55,20 @@ class Authorization():
         return self.is_authorized
 
     def authorize(self, action: Action, record: Dict, **kwargs) -> bool:
-        if (self.has_error()):
+        if self.has_error():
             return False
 
         self.is_authorized = getattr(self, action.value)(record, **kwargs)
         return self.is_authorized
 
     def create(self, record) -> bool:
-        if self.user.id != record.get('user').id:
+        if self.user.id != record.get("user").id:
             self.__set_error(InvalidRequestError())
             return False
         return True
 
     def update(self, record, **kwargs) -> bool:
-        user_id = self.request_data.get('user', None)
+        user_id = self.request_data.get("user", None)
         if user_id is not None:
             # if the user id is included in the payload,
             # ensure it is the id of the current user
@@ -74,10 +76,10 @@ class Authorization():
                 self.__set_error(InvalidRequestError())
                 return False
 
-        if record['_type'] == RecordType.GOAL:
-            buc_id = self.request_data.get('bucket')
+        if record["_type"] == RecordType.GOAL:
+            buc_id = self.request_data.get("bucket")
             request_has_bucket = buc_id is not None
-            bucket_is_changing = buc_id != record.get('bucket')
+            bucket_is_changing = buc_id != record.get("bucket")
 
             if request_has_bucket and bucket_is_changing:
                 # if a goals bucket id is changing, ensure the user has access
@@ -92,7 +94,9 @@ class Authorization():
 
     def delete():
         pass
+
     def view(self, record) -> bool:
         pass
+
     def list(self, record) -> bool:
         pass

@@ -5,17 +5,18 @@ from django.contrib.auth.models import User
 
 from business_logic.models import Bucket, Goal
 
+
 class Utils:
     @staticmethod
     def get_random_string(len=8):
         letters = string.ascii_lowercase
-        rand_str = ''.join(random.choice(letters) for i in range(len))
+        rand_str = "".join(random.choice(letters) for i in range(len))
         return rand_str
 
     @staticmethod
     def get_random_email():
         username = Utils.get_random_string(len=5)
-        return username + '@test.localhost'
+        return username + "@test.localhost"
 
     @staticmethod
     def create_test_user(username=None, password=None):
@@ -33,9 +34,9 @@ class Utils:
         password = Utils.get_random_string(len=20)
         email = Utils.get_random_email()
         return {
-            'username': username,
-            'password': password,
-            'email': email,
+            "username": username,
+            "password": password,
+            "email": email,
         }
 
     @staticmethod
@@ -63,19 +64,23 @@ class Utils:
 
     @staticmethod
     def get_test_goal(**kwargs):
-        via_api = kwargs.get('via_api', True)
+        via_api = kwargs.get("via_api", True)
         goal = {
-            'name': kwargs.get('name', Utils.get_random_string()),
-            'goal_amount': kwargs.get('goal_amount', '500.00'),
-            'amount_saved': kwargs.get('amount_saved', '20.00'),
-            'contrib_amount': kwargs.get('contrib_amount', '30.00'),
-            'contrib_frequency': kwargs.get('contrib_frequency', 'MONTHLY'),
-            'bucket': kwargs.get('bucket',
-                Utils.create_test_bucket().id if via_api else Utils.create_test_bucket()),
+            "name": kwargs.get("name", Utils.get_random_string()),
+            "goal_amount": kwargs.get("goal_amount", "500.00"),
+            "amount_saved": kwargs.get("amount_saved", "20.00"),
+            "contrib_amount": kwargs.get("contrib_amount", "30.00"),
+            "contrib_frequency": kwargs.get("contrib_frequency", "MONTHLY"),
+            "bucket": kwargs.get(
+                "bucket",
+                Utils.create_test_bucket().id
+                if via_api
+                else Utils.create_test_bucket(),
+            ),
         }
-        goal_id = kwargs.get('id', None)
+        goal_id = kwargs.get("id", None)
         if goal_id is not None:
-            goal['id'] = goal_id
+            goal["id"] = goal_id
         return goal
 
     @staticmethod

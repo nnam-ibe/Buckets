@@ -15,28 +15,73 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Bucket',
+            name="Bucket",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=32)),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=32)),
+                ("created_date", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Goal',
+            name="Goal",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=32)),
-                ('goal_amount', models.DecimalField(decimal_places=2, max_digits=9)),
-                ('amount_saved', models.DecimalField(decimal_places=2, default=0, max_digits=9)),
-                ('auto_update', models.BooleanField(default=True)),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('contrib_amount', models.DecimalField(decimal_places=2, max_digits=9)),
-                ('contrib_frequency', models.CharField(choices=[('SEMI_MONTHLY', 'Semi Monthly'), ('MONTHLY', 'Monthly'), ('BI_WEEKLY', 'Bi-Weekly'), ('WEEKLY', 'Weekly'), ('NA', 'N/A')], default='MONTHLY', max_length=32)),
-                ('bucket', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='goals', to='business_logic.bucket')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=32)),
+                ("goal_amount", models.DecimalField(decimal_places=2, max_digits=9)),
+                (
+                    "amount_saved",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=9),
+                ),
+                ("auto_update", models.BooleanField(default=True)),
+                ("created_date", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                ("contrib_amount", models.DecimalField(decimal_places=2, max_digits=9)),
+                (
+                    "contrib_frequency",
+                    models.CharField(
+                        choices=[
+                            ("SEMI_MONTHLY", "Semi Monthly"),
+                            ("MONTHLY", "Monthly"),
+                            ("BI_WEEKLY", "Bi-Weekly"),
+                            ("WEEKLY", "Weekly"),
+                            ("NA", "N/A"),
+                        ],
+                        default="MONTHLY",
+                        max_length=32,
+                    ),
+                ),
+                (
+                    "bucket",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="goals",
+                        to="business_logic.bucket",
+                    ),
+                ),
             ],
         ),
     ]
