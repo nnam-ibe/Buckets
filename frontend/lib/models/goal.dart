@@ -58,6 +58,7 @@ class Goal {
 
   @override
   String toString() {
+    // ignore: prefer_adjacent_string_concatenation
     return 'Goal{' +
         ' id: $id,' +
         ' bucketId: $bucketId,' +

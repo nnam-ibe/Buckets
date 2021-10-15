@@ -42,6 +42,7 @@ class Bucket {
 
   @override
   String toString() {
+    // ignore: prefer_adjacent_string_concatenation
     return 'Bucket{' +
         ' id: $id,' +
         ' userId: $userId,' +
