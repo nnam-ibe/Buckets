@@ -81,6 +81,39 @@ class BucketViewSetTestCase(APITestCase):
         data = response.data
         self.assertEqual(len(data), len(user_buckets))
 
+        for buc in data:
+            self.assertIn(
+                "goals",
+                buc,
+                "Buckets should contain goals without url param /?overview=true",
+            )
+
+        payload = {"overview": "false"}
+        response = self.client.get("/api/bucket/", payload, **self.header_token)
+        self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+        data = response.data
+        self.assertEqual(len(data), len(user_buckets))
+
+        for buc in data:
+            self.assertIn(
+                "goals",
+                buc,
+                "Buckets should contain goals without url param /?overview=true",
+            )
+
+        payload = {"overview": "true"}
+        response = self.client.get("/api/bucket/", payload, **self.header_token)
+        self.assertEqual(response.status_code, HTTPStatus.OK._value_)
+        data = response.data
+        self.assertEqual(len(data), len(user_buckets))
+
+        for buc in data:
+            self.assertNotIn(
+                "goals",
+                buc,
+                "Buckets should not contain goals with url param /?overview=true",
+            )
+
     def test_retrieve_bucket(self):
         """
         Should only be able to retrieve the buckets of the current user
