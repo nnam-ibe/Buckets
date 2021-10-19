@@ -141,8 +141,10 @@ class Goal {
     );
   }
 
-  static List<Goal> fromMapList(List<dynamic> mapGoals) {
+  static List<Goal> fromMapList(List<dynamic>? mapGoals) {
     var goals = <Goal>[];
+    if (mapGoals == null) return goals;
+
     for (var element in mapGoals) {
       goals.add(Goal.fromMap(element));
     }

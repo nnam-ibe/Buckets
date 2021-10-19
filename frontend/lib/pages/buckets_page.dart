@@ -24,12 +24,12 @@ class _BucketsPageState extends State<BucketsPage> {
       context,
       listen: false,
     ).token;
-    if (token != null) {
-      futureBuckets = getBuckets(token);
-    } else {
+    if (token == null) {
       // TODO: state-management this should be somewhere else
       Navigator.of(context).pushNamed(LoginPage.routeName);
+      return;
     }
+    futureBuckets = getBuckets(token);
   }
 
   Future<List<Bucket>> getBuckets(String token) async {

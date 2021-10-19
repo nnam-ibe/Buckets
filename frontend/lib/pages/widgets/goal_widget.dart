@@ -1,43 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/models/goal.dart';
+import 'package:frontend/pages/goal_form_page.dart';
 
-class GoalWidget extends StatelessWidget {
+class GoalWidget extends StatefulWidget {
   final Goal goal;
-
   const GoalWidget({Key? key, required this.goal}) : super(key: key);
+
+  @override
+  _GoalWidgetState createState() => _GoalWidgetState();
+}
+
+class _GoalWidgetState extends State<GoalWidget> {
+  late Goal _goal;
+
+  @override
+  initState() {
+    super.initState();
+    _goal = widget.goal;
+  }
+
+  void editGoal() async {
+    Goal? _updatedGoal = await Navigator.of(context)
+        .pushNamed(GoalFormPage.routeName, arguments: _goal) as Goal?;
+    if (_updatedGoal != null) {
+      setState(() {
+        _goal = _updatedGoal;
+      });
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-        child: Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    goal.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ],
+        child: InkWell(
+      onTap: editGoal,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _goal.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-        Text(
-          goal.getProgressString(),
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        LinearProgressIndicator(
-          minHeight: 15,
-          value: goal.getProgress(),
-        ),
-      ],
+          Text(
+            _goal.getProgressString(),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          LinearProgressIndicator(
+            minHeight: 15,
+            value: _goal.getProgress(),
+          ),
+        ],
+      ),
     ));
   }
 }
