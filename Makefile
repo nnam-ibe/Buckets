@@ -24,3 +24,6 @@ format:
 
 pipenv-run:
 	$(MAKE) -C backend pipenv-run
+
+pipenv-shell:
+	$(MAKE) -C backend pipenv-shell
