@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api/api_response.dart';
 import 'package:frontend/api/repositories.dart';
+import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/bucket.dart';
-import 'package:frontend/pages/authentication/login_page.dart';
-import 'package:provider/provider.dart';
 import 'package:frontend/models/goal.dart';
-import 'package:frontend/api/authentication/session.dart';
 import 'package:frontend/pages/widgets/widget_factory.dart' as widget_factory;
 
 class GoalFormPage extends StatefulWidget {
@@ -30,15 +28,8 @@ class _GoalFormPageState extends State<GoalFormPage> {
   @override
   void initState() {
     super.initState();
-    String? _token = Provider.of<UserSession>(
-      context,
-      listen: false,
-    ).token;
-    if (_token == null) {
-      // TODO: state-management this should be somewhere else
-      Navigator.of(context).pushNamed(LoginPage.routeName);
-      return;
-    }
+    String _token = helpers.getTokenFromProvider(context);
+    if (_token.isEmpty) return;
     futureBuckets = getBuckets(_token);
     token = _token;
   }

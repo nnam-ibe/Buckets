@@ -1,5 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:frontend/api/authentication/session.dart';
 import 'package:frontend/common/constants.dart' as constants;
 import 'package:frontend/models/user.dart';
+import 'package:frontend/pages/authentication/login_page.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Stores the provided user and token in shared prefrences
@@ -35,4 +39,20 @@ Future<String?> getTokenFromPreferences() async {
     return null;
   }
   return prefs.getString(constants.userToken);
+}
+
+/// Returns the current user token from the UserSession provider, using
+/// the [context] of the requesting widget.
+///
+/// If the token is null, it navigates to the loginPage & returns an empty String.
+String getTokenFromProvider(BuildContext context) {
+  String? token = Provider.of<UserSession>(
+    context,
+    listen: false,
+  ).token;
+  if (token == null) {
+    Navigator.of(context).pushNamed(LoginPage.routeName);
+    return "";
+  }
+  return token;
 }
