@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/models/environment.dart';
 import 'package:frontend/pages/bucket_form_page.dart';
 import 'package:frontend/pages/buckets_page.dart';
 import 'package:frontend/pages/goal_form_page.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/common/theme.dart';
 import 'package:frontend/pages/authentication/login_page.dart';
 import 'package:frontend/api/authentication/session.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  // TODO: Move hardcoded string to config file.
-  await prefs.setString('baseUrl', "http://127.0.0.1:8000/api/");
+Future<void> main() async {
+  await dotenv.load(fileName: Environment.fileName);
 
   runApp(
     ChangeNotifierProvider(
