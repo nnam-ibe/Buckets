@@ -46,6 +46,11 @@ class Repositories {
     );
   }
 
+  Future<ApiResponse> createGoal(DraftGoal goal) async {
+    return await apiClient.post(
+        endpoint: "goal/", token: token, payload: goal.toMap());
+  }
+
   Future<ApiResponse> saveGoal(Goal goal) async {
     return await apiClient.put(
         endpoint: "goal/${goal.id}/", token: token, payload: goal.toMap());

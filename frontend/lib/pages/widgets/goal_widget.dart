@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/models/goal.dart';
+import 'package:frontend/models/screen_arguments.dart';
 import 'package:frontend/pages/goal_form_page.dart';
 
 class GoalWidget extends StatefulWidget {
@@ -21,8 +22,14 @@ class _GoalWidgetState extends State<GoalWidget> {
   }
 
   void editGoal() async {
-    Goal? _updatedGoal = await Navigator.of(context)
-        .pushNamed(GoalFormPage.routeName, arguments: _goal) as Goal?;
+    Goal? _updatedGoal = await Navigator.of(context).pushNamed(
+      GoalFormPage.routeName,
+      arguments: GoalFormArguments(
+        isNew: false,
+        bucketId: _goal.bucketId,
+        goal: _goal,
+      ),
+    ) as Goal?;
     if (_updatedGoal != null) {
       setState(() {
         _goal = _updatedGoal;
