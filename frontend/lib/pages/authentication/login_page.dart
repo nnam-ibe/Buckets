@@ -8,7 +8,7 @@ import 'package:frontend/pages/buckets_page.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
-  static const routeName = '/';
+  static const routeName = '/login';
 
   const LoginPage({Key? key}) : super(key: key);
 
@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
         String token = responseData['token'];
         updateUserProvider(user, token);
         await helpers.setUserPrefernces(user, token);
-        Navigator.of(context).pushNamed(BucketsPage.routeName);
+        Navigator.of(context).pushReplacementNamed(BucketsPage.routeName);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(apiResponse.getError())),
