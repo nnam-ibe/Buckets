@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/bucket.dart';
-import 'package:frontend/models/goal.dart';
 import 'package:frontend/models/screen_arguments.dart';
 import 'package:frontend/pages/bucket_form_page.dart';
 import 'package:frontend/pages/goal_form_page.dart';

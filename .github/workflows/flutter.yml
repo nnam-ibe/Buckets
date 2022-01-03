@@ -18,6 +18,6 @@ jobs:
     - name: Install Packages
       run: flutter pub get
     - name: Analyze
-      run: flutter analyze
+      run: make lint
     - name: Run tests
       run: flutter test
