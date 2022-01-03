@@ -18,7 +18,7 @@ jobs:
         pipenv install --dev
     - name: Lint Code
       run: |
-        make lint
+        make -C backend lint
 
   build:
     env:
