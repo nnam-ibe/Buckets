@@ -1,8 +1,9 @@
 import 'dart:convert' as convert;
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:frontend/api/api_response.dart';
+import 'package:frontend/models/environment.dart';
+import 'package:http/http.dart' as http;
 
 class ApiClient {
   ApiClient();
@@ -15,8 +16,7 @@ class ApiClient {
     required String endpoint,
     Map<String, String>? queryParams,
   }) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? baseUrl = prefs.getString('baseUrl');
+    String? baseUrl = Environment.baseUrl;
     if (baseUrl == null) {
       // TODO: Exception, handle exception.
       throw Exception("There was no baseUrl");

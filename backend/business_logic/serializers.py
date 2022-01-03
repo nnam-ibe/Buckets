@@ -33,3 +33,15 @@ class BucketSerializer(serializers.ModelSerializer):
             "last_modified",
             "goals",
         )
+
+
+class BucketOverviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bucket
+        fields = (
+            "id",
+            "name",
+            "user",
+            "created_date",
+            "last_modified",
+        )

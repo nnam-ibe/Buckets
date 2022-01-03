@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:frontend/models/contribution_frequency.dart';
 
 class Goal {
@@ -141,8 +143,10 @@ class Goal {
     );
   }
 
-  static List<Goal> fromMapList(List<dynamic> mapGoals) {
+  static List<Goal> fromMapList(List<dynamic>? mapGoals) {
     var goals = <Goal>[];
+    if (mapGoals == null) return goals;
+
     for (var element in mapGoals) {
       goals.add(Goal.fromMap(element));
     }
@@ -155,5 +159,107 @@ class Goal {
 
   String getProgressString() {
     return "\$$amountSaved / \$$goalAmount";
+  }
+}
+
+class DraftGoal {
+  int? bucketId;
+  String? name = '';
+  double? goalAmount = 100.00;
+  double? amountSaved = 0.00;
+  double? contribAmount = 50.00;
+  ContributionFrequency? contribFrequency = ContributionFrequency.monthly;
+  bool? autoUpdate = true;
+
+//<editor-fold desc="Data Methods">
+
+  DraftGoal();
+
+  DraftGoal.withArgs(
+    this.bucketId,
+    this.name,
+    this.goalAmount,
+    this.amountSaved,
+    this.contribAmount,
+    this.contribFrequency,
+    this.autoUpdate,
+  );
+
+  bool validateForSave() {
+    if (bucketId == null ||
+        name == null ||
+        goalAmount == null ||
+        amountSaved == null ||
+        contribAmount == null ||
+        contribFrequency == null ||
+        autoUpdate == null) {
+      return false;
+    }
+    return true;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'bucket': bucketId.toString(),
+      'name': name.toString(),
+      'goal_amount': goalAmount.toString(),
+      'amount_saved': amountSaved.toString(),
+      'contrib_amount': contribAmount.toString(),
+      'contrib_frequency': contribFrequency != null
+          ? contribFreqToString(contribFrequency!)
+          : null,
+      'auto_update': autoUpdate.toString(),
+    };
+  }
+
+  factory DraftGoal.fromMap(Map<String, dynamic> map) {
+    return DraftGoal.withArgs(
+      map['bucket']?.toInt(),
+      map['name'],
+      map['goalAmount']?.toDouble(),
+      map['amountSaved']?.toDouble(),
+      map['contribAmount']?.toDouble(),
+      map['contribFrequency'] != null
+          ? stringToContribFreq(map['contrib_frequency'])
+          : null,
+      map['auto_update'].runtimeType == bool
+          ? map['auto_update']
+          : map['auto_update'].toLowerCase() == 'true',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory DraftGoal.fromJson(String source) =>
+      DraftGoal.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'DraftGoal(bucketId: $bucketId, name: $name, goalAmount: $goalAmount, amountSaved: $amountSaved, contribAmount: $contribAmount, contribFrequency: $contribFrequency, autoUpdate: $autoUpdate)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is DraftGoal &&
+        other.bucketId == bucketId &&
+        other.name == name &&
+        other.goalAmount == goalAmount &&
+        other.amountSaved == amountSaved &&
+        other.contribAmount == contribAmount &&
+        other.contribFrequency == contribFrequency &&
+        other.autoUpdate == autoUpdate;
+  }
+
+  @override
+  int get hashCode {
+    return bucketId.hashCode ^
+        name.hashCode ^
+        goalAmount.hashCode ^
+        amountSaved.hashCode ^
+        contribAmount.hashCode ^
+        contribFrequency.hashCode ^
+        autoUpdate.hashCode;
   }
 }

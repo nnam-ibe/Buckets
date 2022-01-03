@@ -62,6 +62,8 @@ celerybeat-schedule.*
 # Environments
 secrets.sh
 .env
+.env.development
+.env.production
 .venv
 env/
 venv/

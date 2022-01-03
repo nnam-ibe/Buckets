@@ -16,6 +16,7 @@ run-tests:
 
 lint:
 	$(MAKE) -C backend lint
+	$(MAKE) -C frontend lint
 
 format:
 	$(MAKE) -C backend format
@@ -23,3 +24,6 @@ format:
 
 pipenv-run:
 	$(MAKE) -C backend pipenv-run
+
+pipenv-shell:
+	$(MAKE) -C backend pipenv-shell

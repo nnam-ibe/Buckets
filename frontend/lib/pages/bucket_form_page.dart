@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api/api_response.dart';
 import 'package:frontend/api/repositories.dart';
-import 'package:frontend/pages/authentication/login_page.dart';
-import 'package:provider/provider.dart';
+import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/bucket.dart';
-import 'package:frontend/api/authentication/session.dart';
 
 class BucketFormPage extends StatefulWidget {
   static const routeName = '/bucket/:id';
@@ -37,14 +35,9 @@ class _BucketFormPageState extends State<BucketFormPage> {
   @override
   void initState() {
     super.initState();
-    token = Provider.of<UserSession>(
-      context,
-      listen: false,
-    ).token;
-    if (token == null) {
-      // TODO: state-management this should be somewhere else
-      Navigator.of(context).pushNamed(LoginPage.routeName);
-    }
+    String _token = helpers.getTokenFromProvider(context);
+    if (_token.isEmpty) return;
+    token = _token;
   }
 
   void saveBucket() async {

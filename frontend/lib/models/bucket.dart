@@ -6,7 +6,7 @@ class Bucket {
   String name;
   DateTime createdDate;
   DateTime lastModified;
-  List<Goal> goals;
+  List<Goal> goals = [];
 
 //<editor-fold desc="Data Methods">
 
@@ -16,8 +16,12 @@ class Bucket {
     required this.name,
     required this.createdDate,
     required this.lastModified,
-    required this.goals,
-  });
+    List<Goal>? goals,
+  }) {
+    if (goals != null) {
+      this.goals = goals;
+    }
+  }
 
   @override
   bool operator ==(Object other) =>

@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import status, viewsets, permissions
+from rest_framework import request, status, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from ..serializers import BucketSerializer, GoalSerializer
+from ..serializers import BucketOverviewSerializer, BucketSerializer, GoalSerializer
 from ..models import Bucket, Goal
 from ..lib.authorization import Authorization, Action, RecordType
 
@@ -13,6 +13,15 @@ class BucketViewSet(viewsets.ModelViewSet):
     queryset = Bucket.objects.all()
     serializer_class = BucketSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if (
+            hasattr(self, "action")
+            and self.action == "list"
+            and self.request.query_params.get("overview", False) == "true"
+        ):
+            return BucketOverviewSerializer
+        return BucketSerializer
 
     def get_queryset(self):
         return Bucket.objects.filter(user=self.request.user).all()

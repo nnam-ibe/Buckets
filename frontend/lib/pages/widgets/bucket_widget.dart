@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/bucket.dart';
+import 'package:frontend/models/goal.dart';
+import 'package:frontend/models/screen_arguments.dart';
 import 'package:frontend/pages/bucket_form_page.dart';
+import 'package:frontend/pages/goal_form_page.dart';
 import 'package:frontend/pages/widgets/goal_widget.dart';
 
 class BucketWidget extends StatefulWidget {
@@ -45,6 +48,11 @@ class _BucketWidgetState extends State<BucketWidget> {
     }
   }
 
+  void addGoal() async {
+    Navigator.of(context).pushNamed(GoalFormPage.routeName,
+        arguments: GoalFormArguments(isNew: true, bucketId: _bucket.id));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -64,7 +72,10 @@ class _BucketWidgetState extends State<BucketWidget> {
                   child: const Text('Edit'),
                   onPressed: editBucket,
                 ),
-                ElevatedButton(child: const Text('Add Goal'), onPressed: () {})
+                ElevatedButton(
+                  child: const Text('Add Goal'),
+                  onPressed: addGoal,
+                )
               ],
             )),
         Column(
