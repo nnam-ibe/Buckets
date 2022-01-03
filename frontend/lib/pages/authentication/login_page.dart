@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api/api_response.dart';
 import 'package:frontend/api/authentication/auth_client.dart';
 import 'package:frontend/api/authentication/session.dart';
+import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/user.dart';
 import 'package:frontend/pages/buckets_page.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:frontend/common/helpers.dart' as helpers;
 
 class LoginPage extends StatefulWidget {
   static const routeName = '/';
