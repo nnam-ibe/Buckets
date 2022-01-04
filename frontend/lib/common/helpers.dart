@@ -56,3 +56,15 @@ String getTokenFromProvider(BuildContext context) {
   }
   return token;
 }
+
+/// Returns the current user from the UserSession provider, using the [context]
+/// of the requesting Widget.
+///
+/// Throws an exception if not user is found.
+User getUserFromProvider(BuildContext context) {
+  User? user = Provider.of<UserSession>(context, listen: false).user;
+  if (user == null) {
+    throw Exception('User not found');
+  }
+  return user;
+}

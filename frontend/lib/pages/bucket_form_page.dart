@@ -3,6 +3,7 @@ import 'package:frontend/api/api_response.dart';
 import 'package:frontend/api/repositories.dart';
 import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/bucket.dart';
+import 'package:frontend/models/screen_arguments.dart';
 
 class BucketFormPage extends StatefulWidget {
   static const routeName = '/bucket/:id';
@@ -13,12 +14,14 @@ class BucketFormPage extends StatefulWidget {
 }
 
 class _BucketFormPageState extends State<BucketFormPage> {
+  BucketFormArguments? screenArgs;
   String name = '';
   String? token = '';
   Bucket? bucket;
+  DraftBucket? draftBucket;
 
   bool isNew() {
-    return bucket == null;
+    return screenArgs!.isNew;
   }
 
   String getCreateEditString() {
@@ -41,10 +44,16 @@ class _BucketFormPageState extends State<BucketFormPage> {
   }
 
   void saveBucket() async {
-    // TODO: null safety check please
-    bucket?.name = name;
+    if (isNew()) {
+      draftBucket!.name = name;
+    } else {
+      bucket?.name = name;
+    }
+
     Repositories repositories = Repositories(token: token!);
-    ApiResponse apiResponse = await repositories.saveBucket(bucket!);
+    ApiResponse apiResponse = isNew()
+        ? await repositories.createBucket(draftBucket!)
+        : await repositories.saveBucket(bucket!);
     if (apiResponse.wasSuccessful()) {
       Bucket updatedBucket = Bucket.fromMap(apiResponse.getDataAsMap());
       Navigator.of(context).pop(updatedBucket);
@@ -57,10 +66,18 @@ class _BucketFormPageState extends State<BucketFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    bucket = ModalRoute.of(context)?.settings.arguments as Bucket;
-    if (!isNew()) {
+    screenArgs =
+        ModalRoute.of(context)?.settings.arguments as BucketFormArguments;
+    if (screenArgs == null) {
+      throw Exception('BucketFormArguments are required');
+    }
+    if (screenArgs!.isNew) {
+      draftBucket = DraftBucket(helpers.getUserFromProvider(context).id, name);
+    } else {
+      bucket = screenArgs!.bucket;
       name = bucket!.name;
     }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(getTitleText()),

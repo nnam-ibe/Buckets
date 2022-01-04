@@ -38,6 +38,14 @@ class Repositories {
     return Bucket.fromMap(apiResponse.getDataAsMap());
   }
 
+  Future<ApiResponse> createBucket(DraftBucket bucket) async {
+    return await apiClient.post(
+      endpoint: "bucket/",
+      token: token,
+      payload: bucket.toMap(),
+    );
+  }
+
   Future<ApiResponse> saveBucket(Bucket bucket) async {
     return await apiClient.put(
       endpoint: "bucket/${bucket.id}/",

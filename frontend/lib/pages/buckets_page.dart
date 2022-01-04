@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api/repositories.dart';
 import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/bucket.dart';
+import 'package:frontend/models/screen_arguments.dart';
 import 'package:frontend/pages/widgets/bucket_widget.dart';
+import 'package:frontend/pages/bucket_form_page.dart';
 
 class BucketsPage extends StatefulWidget {
   static const routeName = '/buckets';
+  static const menuItems = <String>['Create Bucket'];
   const BucketsPage({Key? key}) : super(key: key);
 
   @override
@@ -51,10 +54,38 @@ class _BucketsPageState extends State<BucketsPage> {
     );
   }
 
+  List<PopupMenuItem<String>> menuItemBuilder(BuildContext context) {
+    return BucketsPage.menuItems.map((String choice) {
+      return PopupMenuItem(
+        child: Text(choice),
+        value: choice,
+      );
+    }).toList();
+  }
+
+  menuItemSelected(item) {
+    switch (item) {
+      case 'Create Bucket':
+        Navigator.of(context).pushNamed(
+          BucketFormPage.routeName,
+          arguments: BucketFormArguments(isNew: true),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Buckets')),
+      appBar: AppBar(
+        title: const Text('Buckets'),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            itemBuilder: menuItemBuilder,
+            onSelected: menuItemSelected,
+          )
+        ],
+      ),
       body: bucketsWidget(),
     );
   }

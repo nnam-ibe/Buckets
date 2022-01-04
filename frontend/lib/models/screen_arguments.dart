@@ -1,4 +1,5 @@
 import 'package:frontend/models/goal.dart';
+import 'package:frontend/models/bucket.dart';
 
 class GoalFormArguments {
   final Goal? goal;
@@ -12,6 +13,16 @@ class GoalFormArguments {
   }) {
     if (!isNew && goal == null) {
       throw Exception('Goal cannot be null');
+    }
+  }
+}
+
+class BucketFormArguments {
+  final Bucket? bucket;
+  final bool isNew;
+  BucketFormArguments({required this.isNew, this.bucket}) {
+    if (!isNew && bucket == null) {
+      throw Exception('Bucket cannot be null');
     }
   }
 }
