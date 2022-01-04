@@ -55,10 +55,16 @@ Future<String?> getTokenFromPreferences() async {
 
 /// Removes the user from the UserSession provider, using
 /// the [context] of the requesting widget.
-///
-/// This will cause the app to redirect to the logout page.
 void removeUserFromProvider(BuildContext context) {
   Provider.of<UserSession>(context, listen: false).unsetUser();
+}
+
+/// Removes the users login data from preferences & provider, and navigates
+/// to the login screen.
+Future<void> removeAllLoginData(BuildContext context) async {
+  await removeUserFromPrefences();
+  removeUserFromProvider(context);
+  Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
 }
 
 /// Returns the current user token from the UserSession provider, using
