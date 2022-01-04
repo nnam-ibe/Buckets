@@ -44,7 +44,7 @@ Future<String?> getTokenFromPreferences() async {
 /// Returns the current user token from the UserSession provider, using
 /// the [context] of the requesting widget.
 ///
-/// If the token is null, it navigates to the loginPage & returns an empty String.
+/// If there is no token, it navigates to the loginPage & returns an empty String.
 String getTokenFromProvider(BuildContext context) {
   String? token = Provider.of<UserSession>(
     context,
@@ -55,4 +55,16 @@ String getTokenFromProvider(BuildContext context) {
     return "";
   }
   return token;
+}
+
+/// Returns the current user from the UserSession provider, using the [context]
+/// of the requesting Widget.
+///
+/// Throws an exception if not user is found.
+User getUserFromProvider(BuildContext context) {
+  User? user = Provider.of<UserSession>(context, listen: false).user;
+  if (user == null) {
+    throw Exception('User not found');
+  }
+  return user;
 }

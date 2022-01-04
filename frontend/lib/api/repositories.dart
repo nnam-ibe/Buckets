@@ -38,6 +38,24 @@ class Repositories {
     return Bucket.fromMap(apiResponse.getDataAsMap());
   }
 
+  Future<bool> deleteBucket(int id) async {
+    ApiResponse apiResponse =
+        await apiClient.delete(endpoint: 'bucket/$id/', token: token);
+    if (!apiResponse.wasSuccessful()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<ApiResponse> createBucket(DraftBucket bucket) async {
+    return await apiClient.post(
+      endpoint: "bucket/",
+      token: token,
+      payload: bucket.toMap(),
+    );
+  }
+
   Future<ApiResponse> saveBucket(Bucket bucket) async {
     return await apiClient.put(
       endpoint: "bucket/${bucket.id}/",

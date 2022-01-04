@@ -8,7 +8,7 @@ import 'package:frontend/pages/buckets_page.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
-  static const routeName = '/';
+  static const routeName = '/login';
 
   const LoginPage({Key? key}) : super(key: key);
 
@@ -20,12 +20,10 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  late Future<bool> isLoggedIn;
 
   @override
   void initState() {
     super.initState();
-    isLoggedIn = checkUserLoggedIn();
   }
 
   @override
@@ -61,14 +59,6 @@ class _LoginPageState extends State<LoginPage> {
     ).setUser(user: user, token: token);
   }
 
-  Future<bool> checkUserLoggedIn() async {
-    User? user = await helpers.getUserFromPrefrences();
-    String? token = await helpers.getTokenFromPreferences();
-    if (user == null || token == null) return false;
-    updateUserProvider(user, token);
-    return true;
-  }
-
   void onLoginClick() async {
     if (_formKey.currentState!.validate()) {
       var authClient = AuthClient();
@@ -80,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
         String token = responseData['token'];
         updateUserProvider(user, token);
         await helpers.setUserPrefernces(user, token);
-        Navigator.of(context).pushNamed(BucketsPage.routeName);
+        Navigator.of(context).pushReplacementNamed(BucketsPage.routeName);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(apiResponse.getError())),
@@ -91,52 +81,37 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-        future: isLoggedIn,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data!) {
-              Navigator.of(context).pushNamed(BucketsPage.routeName);
-            }
-            return Scaffold(
-              body: Center(
-                child: Container(
-                  padding: const EdgeInsets.all(80.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Welcome',
-                          style: Theme.of(context).textTheme.headline1,
-                        ),
-                        getTextFieldWidget(
-                            controller: usernameController,
-                            labelText: 'Username'),
-                        getTextFieldWidget(
-                            controller: passwordController,
-                            labelText: 'Password',
-                            obscureText: true),
-                        const SizedBox(
-                          height: 24,
-                        ),
-                        ElevatedButton(
-                          child: const Text('Login'),
-                          onPressed: onLoginClick,
-                        ),
-                      ],
-                    ),
-                  ),
+    return Scaffold(
+      body: Center(
+        child: Container(
+          padding: const EdgeInsets.all(80.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Welcome',
+                  style: Theme.of(context).textTheme.headline1,
                 ),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('${snapshot.error}'),
-            ));
-          }
-          return const CircularProgressIndicator();
-        });
+                getTextFieldWidget(
+                    controller: usernameController, labelText: 'Username'),
+                getTextFieldWidget(
+                    controller: passwordController,
+                    labelText: 'Password',
+                    obscureText: true),
+                const SizedBox(
+                  height: 24,
+                ),
+                ElevatedButton(
+                  child: const Text('Login'),
+                  onPressed: onLoginClick,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

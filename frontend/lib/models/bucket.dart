@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:frontend/models/goal.dart';
 
 class Bucket {
@@ -124,4 +126,56 @@ class Bucket {
   String getProgressString() {
     return "\$${getTotalSaved()} / \$${getTotalGoalAmoun()}";
   }
+}
+
+class DraftBucket {
+  int userId;
+  String? name;
+
+  DraftBucket(
+    this.userId,
+    this.name,
+  );
+
+  DraftBucket copyWith({
+    int? userId,
+    String? name,
+  }) {
+    return DraftBucket(
+      userId ?? this.userId,
+      name ?? this.name,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'user': userId,
+      'name': name,
+    };
+  }
+
+  factory DraftBucket.fromMap(Map<String, dynamic> map) {
+    return DraftBucket(
+      map['user']?.toInt() ?? 0,
+      map['name'] as String,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory DraftBucket.fromJson(String source) =>
+      DraftBucket.fromMap(json.decode(source));
+
+  @override
+  String toString() => 'DraftBucket(userId: $userId, name: $name)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is DraftBucket && other.userId == userId && other.name == name;
+  }
+
+  @override
+  int get hashCode => userId.hashCode ^ name.hashCode;
 }
