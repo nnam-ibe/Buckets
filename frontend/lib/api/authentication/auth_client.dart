@@ -31,10 +31,7 @@ class AuthClient {
     ApiClient apiClient = ApiClient();
     ApiResponse apiResponse = await apiClient
         .post(endpoint: "auth/logout", token: token, payload: {});
-    if (apiResponse.wasSuccessful()) {
-      await helpers.removeUserFromPrefences();
-      helpers.removeUserFromProvider(context);
-    }
+    await helpers.removeAllLoginData(context);
     return apiResponse;
   }
 }

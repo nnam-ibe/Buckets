@@ -47,11 +47,16 @@ class _BucketsPageState extends State<BucketsPage> {
             },
           );
         } else if (snapshot.hasError) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('${snapshot.error}'),
-          ));
+          logoutUser();
         }
-        return const CircularProgressIndicator();
+        return Scaffold(
+          body: Center(
+            child: Container(
+              alignment: Alignment.center,
+              child: const CircularProgressIndicator(),
+            ),
+          ),
+        );
       },
     );
   }
@@ -63,6 +68,10 @@ class _BucketsPageState extends State<BucketsPage> {
         value: choice,
       );
     }).toList();
+  }
+
+  void logoutUser() async {
+    await AuthClient().logout(context);
   }
 
   void logoutClicked() {
@@ -78,14 +87,7 @@ class _BucketsPageState extends State<BucketsPage> {
         child: const Text('Logout'),
         onPressed: () async {
           Navigator.of(context).pop();
-          ApiResponse apiResponse = await AuthClient().logout(context);
-          if (apiResponse.wasSuccessful()) {
-            Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Unable to logout'),
-            ));
-          }
+          logoutUser();
         },
       ),
     ]);
