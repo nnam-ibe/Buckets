@@ -4,7 +4,7 @@ import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/bucket.dart';
 import 'package:frontend/models/screen_arguments.dart';
 import 'package:frontend/pages/widgets/bucket_widget.dart';
-import 'package:frontend/pages/bucket_form_page.dart';
+import 'package:frontend/pages/forms/bucket_form_page.dart';
 
 class BucketsPage extends StatefulWidget {
   static const routeName = '/buckets';
@@ -17,7 +17,6 @@ class BucketsPage extends StatefulWidget {
 
 class _BucketsPageState extends State<BucketsPage> {
   late Future<List<Bucket>> futureBuckets;
-  String? token = "";
 
   @override
   void initState() {

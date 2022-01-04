@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
 import 'package:frontend/models/goal.dart';
 
 class Bucket {

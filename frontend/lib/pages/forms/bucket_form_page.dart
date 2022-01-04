@@ -14,14 +14,38 @@ class BucketFormPage extends StatefulWidget {
 }
 
 class _BucketFormPageState extends State<BucketFormPage> {
-  BucketFormArguments? screenArgs;
+  late BucketFormArguments screenArgs;
   String name = '';
-  String? token = '';
+  String token = '';
   Bucket? bucket;
   DraftBucket? draftBucket;
 
+  @override
+  void initState() {
+    super.initState();
+    String _token = helpers.getTokenFromProvider(context);
+    if (_token.isEmpty) return;
+    token = _token;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    setState(() {
+      screenArgs =
+          ModalRoute.of(context)?.settings.arguments as BucketFormArguments;
+      if (screenArgs.isNew) {
+        draftBucket =
+            DraftBucket(helpers.getUserFromProvider(context).id, name);
+      } else {
+        bucket = screenArgs.bucket;
+        name = bucket!.name;
+      }
+    });
+  }
+
   bool isNew() {
-    return screenArgs!.isNew;
+    return screenArgs.isNew;
   }
 
   String getCreateEditString() {
@@ -35,14 +59,6 @@ class _BucketFormPageState extends State<BucketFormPage> {
     return "${getCreateEditString()} Bucket";
   }
 
-  @override
-  void initState() {
-    super.initState();
-    String _token = helpers.getTokenFromProvider(context);
-    if (_token.isEmpty) return;
-    token = _token;
-  }
-
   void saveBucket() async {
     if (isNew()) {
       draftBucket!.name = name;
@@ -50,7 +66,7 @@ class _BucketFormPageState extends State<BucketFormPage> {
       bucket?.name = name;
     }
 
-    Repositories repositories = Repositories(token: token!);
+    Repositories repositories = Repositories(token: token);
     ApiResponse apiResponse = isNew()
         ? await repositories.createBucket(draftBucket!)
         : await repositories.saveBucket(bucket!);
@@ -66,7 +82,7 @@ class _BucketFormPageState extends State<BucketFormPage> {
 
   void deleteBucket() async {
     if (isNew()) return;
-    Repositories repositories = Repositories(token: token!);
+    Repositories repositories = Repositories(token: token);
     bool isDeleted = await repositories.deleteBucket(bucket!.id);
     if (!isDeleted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -99,18 +115,6 @@ class _BucketFormPageState extends State<BucketFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    screenArgs =
-        ModalRoute.of(context)?.settings.arguments as BucketFormArguments;
-    if (screenArgs == null) {
-      throw Exception('BucketFormArguments are required');
-    }
-    if (screenArgs!.isNew) {
-      draftBucket = DraftBucket(helpers.getUserFromProvider(context).id, name);
-    } else {
-      bucket = screenArgs!.bucket;
-      name = bucket!.name;
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(getTitleText()),

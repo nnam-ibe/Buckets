@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/bucket.dart';
 import 'package:frontend/models/screen_arguments.dart';
-import 'package:frontend/pages/bucket_form_page.dart';
-import 'package:frontend/pages/goal_form_page.dart';
+import 'package:frontend/pages/forms/bucket_form_page.dart';
+import 'package:frontend/pages/forms/goal_form_page.dart';
 import 'package:frontend/pages/widgets/goal_widget.dart';
 
 class BucketWidget extends StatefulWidget {

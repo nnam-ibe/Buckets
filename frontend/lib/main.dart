@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/models/environment.dart';
-import 'package:frontend/pages/bucket_form_page.dart';
+import 'package:frontend/pages/forms/bucket_form_page.dart';
 import 'package:frontend/pages/buckets_page.dart';
-import 'package:frontend/pages/goal_form_page.dart';
+import 'package:frontend/pages/forms/goal_form_page.dart';
 import 'package:frontend/pages/root_page.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/common/theme.dart';

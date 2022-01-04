@@ -16,8 +16,8 @@ class GoalFormPage extends StatefulWidget {
 }
 
 class _GoalFormPageState extends State<GoalFormPage> {
-  GoalFormArguments? screenArgs;
-  String? token = '';
+  late GoalFormArguments screenArgs;
+  String token = '';
   Goal? goal;
   DraftGoal? draftGoal;
   final _formKey = GlobalKey<FormState>();
@@ -35,6 +35,14 @@ class _GoalFormPageState extends State<GoalFormPage> {
     if (_token.isEmpty) return;
     futureBuckets = getBuckets(_token);
     token = _token;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    screenArgs =
+        ModalRoute.of(context)?.settings.arguments as GoalFormArguments;
+    setUpGoal(screenArgs);
   }
 
   @override
@@ -56,7 +64,7 @@ class _GoalFormPageState extends State<GoalFormPage> {
 
   /// Throws and error if goal is null.
   void validateForm() {
-    if (screenArgs!.isNew) {
+    if (screenArgs.isNew) {
       if (draftGoal == null) throw Exception('Missing draft goal');
     } else if (!hasGoal()) {
       throw Exception('Missing goal');
@@ -81,25 +89,27 @@ class _GoalFormPageState extends State<GoalFormPage> {
   /// Updates the goal model with values from the controller.
   void updateGoalModel() {
     validateForm();
-    if (screenArgs!.isNew) {
-      draftGoal!.name = nameController.text;
-      draftGoal!.goalAmount = double.parse(goalAmountController.text);
-      draftGoal!.amountSaved = double.parse(savedAmountController.text);
-      draftGoal!.bucketId = selectedBucket!.id;
-      draftGoal!.validateForSave();
-    } else {
-      goal!.name = nameController.text;
-      goal!.goalAmount = double.parse(goalAmountController.text);
-      goal!.amountSaved = double.parse(savedAmountController.text);
-      goal!.bucketId = selectedBucket!.id;
-    }
+    setState(() {
+      if (screenArgs.isNew) {
+        draftGoal!.name = nameController.text;
+        draftGoal!.goalAmount = double.parse(goalAmountController.text);
+        draftGoal!.amountSaved = double.parse(savedAmountController.text);
+        draftGoal!.bucketId = selectedBucket!.id;
+        draftGoal!.validateForSave();
+      } else {
+        goal!.name = nameController.text;
+        goal!.goalAmount = double.parse(goalAmountController.text);
+        goal!.amountSaved = double.parse(savedAmountController.text);
+        goal!.bucketId = selectedBucket!.id;
+      }
+    });
   }
 
   void saveGoal() async {
     if (_formKey.currentState!.validate()) {
       updateGoalModel();
-      Repositories repositories = Repositories(token: token!);
-      ApiResponse apiResponse = screenArgs!.isNew
+      Repositories repositories = Repositories(token: token);
+      ApiResponse apiResponse = screenArgs.isNew
           ? await repositories.createGoal(draftGoal!)
           : await repositories.saveGoal(goal!);
       if (apiResponse.wasSuccessful()) {
@@ -120,39 +130,36 @@ class _GoalFormPageState extends State<GoalFormPage> {
   }
 
   void setUpGoal(GoalFormArguments args) {
-    // Sets up draft goal is [args.isNew].
-    if (args.isNew) {
-      draftGoal = DraftGoal();
-      goalAmountController.text = draftGoal?.goalAmount.toString() ?? '';
-      savedAmountController.text = draftGoal?.amountSaved.toString() ?? '';
-      return;
-    } else {
-      goal = args.goal;
-      if (!hasGoal()) {
-        throw Exception('Expected goal argument');
+    // Sets up draft goal if [args.isNew] == true.
+    setState(() {
+      if (args.isNew) {
+        draftGoal = DraftGoal();
+        goalAmountController.text = draftGoal?.goalAmount.toString() ?? '';
+        savedAmountController.text = draftGoal?.amountSaved.toString() ?? '';
+        return;
+      } else {
+        goal = args.goal;
+        if (!hasGoal()) {
+          throw Exception('Expected goal argument');
+        }
+        nameController.text = goal!.name;
+        goalAmountController.text = goal!.goalAmount.toString();
+        savedAmountController.text = goal!.amountSaved.toString();
       }
-      nameController.text = goal!.name;
-      goalAmountController.text = goal!.goalAmount.toString();
-      savedAmountController.text = goal!.amountSaved.toString();
-    }
+    });
   }
 
-  Bucket getSelectedBucket(List<Bucket> bucketsList, GoalFormArguments args) {
+  Bucket getSelectedBucket(List<Bucket> bucketsList) {
     if (bucketsList.isEmpty) {
       throw Exception('There should be a bucket');
     }
-    int bucketId = args.bucketId;
+    int bucketId = screenArgs.bucketId;
     return bucketsList.firstWhere((buc) => buc.id == bucketId,
         orElse: () => bucketsList.first);
   }
 
   @override
   Widget build(BuildContext context) {
-    GoalFormArguments args =
-        ModalRoute.of(context)?.settings.arguments as GoalFormArguments;
-    screenArgs = args;
-    setUpGoal(args);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(getTitleText()),
@@ -167,7 +174,7 @@ class _GoalFormPageState extends State<GoalFormPage> {
             }
             if (snapshot.hasData) {
               List<Bucket> bucketsList = snapshot.data as List<Bucket>;
-              selectedBucket ??= getSelectedBucket(bucketsList, args);
+              selectedBucket ??= getSelectedBucket(bucketsList);
 
               return Padding(
                 padding: const EdgeInsets.all(15.0),
