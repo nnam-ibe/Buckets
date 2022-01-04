@@ -94,6 +94,27 @@ class _BucketFormPageState extends State<BucketFormPage> {
     Navigator.of(context).pop();
   }
 
+  void deleteClicked() {
+    AlertDialog dialog = AlertDialog(
+      title: Text('Delete ${bucket!.name}'),
+      content: const Text('And the goals in this bucket'),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel')),
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              deleteBucket();
+            },
+            child: const Text('Delete')),
+      ],
+    );
+    showDialog(context: context, builder: (context) => dialog);
+  }
+
   List<ElevatedButton> getButtonBarBtns() {
     var btns = [
       ElevatedButton(
@@ -104,7 +125,7 @@ class _BucketFormPageState extends State<BucketFormPage> {
     if (!isNew()) {
       btns.add(
         ElevatedButton(
-          onPressed: deleteBucket,
+          onPressed: deleteClicked,
           child: const Text('Delete Bucket'),
           style: ElevatedButton.styleFrom(primary: Colors.red),
         ),
