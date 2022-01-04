@@ -60,7 +60,9 @@ class _BucketWidgetState extends State<BucketWidget> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ListTile(
-          leading: const Icon(Icons.arrow_drop_down),
+          leading: showButtonTray
+              ? const Icon(Icons.arrow_drop_up)
+              : const Icon(Icons.arrow_drop_down),
           onTap: toggleButtonTray,
           title: Text(_bucket.name),
           trailing: Text(_bucket.getProgressString()),

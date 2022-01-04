@@ -68,6 +68,7 @@ class _LoginPageState extends State<LoginPage> {
         var responseData = apiResponse.getDataAsMap();
         var user = User.fromMap(responseData['user']);
         String token = responseData['token'];
+        AuthClient.token = token;
         updateUserProvider(user, token);
         await helpers.setUserPrefernces(user, token);
         Navigator.of(context).pushReplacementNamed(BucketsPage.routeName);

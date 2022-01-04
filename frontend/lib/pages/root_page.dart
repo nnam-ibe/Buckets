@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/api/authentication/auth_client.dart';
 import 'package:frontend/api/authentication/session.dart';
 import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/user.dart';
@@ -35,6 +36,7 @@ class _RootPageState extends State<RootPage> {
     if (user == null || token == null) {
       return false;
     }
+    AuthClient.token = token;
     Provider.of<UserSession>(
       context,
       listen: false,
