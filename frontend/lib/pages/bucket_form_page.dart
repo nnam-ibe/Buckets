@@ -64,6 +64,39 @@ class _BucketFormPageState extends State<BucketFormPage> {
     );
   }
 
+  void deleteBucket() async {
+    if (isNew()) return;
+    Repositories repositories = Repositories(token: token!);
+    bool isDeleted = await repositories.deleteBucket(bucket!.id);
+    if (!isDeleted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to delete bucket, ☹️️')));
+      return;
+    }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Deleted Bucket')));
+    Navigator.of(context).pop();
+  }
+
+  List<ElevatedButton> getButtonBarBtns() {
+    var btns = [
+      ElevatedButton(
+        onPressed: saveBucket,
+        child: const Text('Save Bucket'),
+      ),
+    ];
+    if (!isNew()) {
+      btns.add(
+        ElevatedButton(
+          onPressed: deleteBucket,
+          child: const Text('Delete Bucket'),
+          style: ElevatedButton.styleFrom(primary: Colors.red),
+        ),
+      );
+    }
+    return btns;
+  }
+
   @override
   Widget build(BuildContext context) {
     screenArgs =
@@ -97,8 +130,10 @@ class _BucketFormPageState extends State<BucketFormPage> {
                 name = value;
               },
             ),
-            ElevatedButton(
-                onPressed: saveBucket, child: const Text('Save Bucket')),
+            ButtonBar(
+              alignment: MainAxisAlignment.center,
+              children: getButtonBarBtns(),
+            )
           ],
         ),
       ),

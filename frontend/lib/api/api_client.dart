@@ -120,4 +120,27 @@ class ApiClient {
       return handleError('Error connecting to the server');
     }
   }
+
+  /// Sends a delete request to endpoint.
+  Future<ApiResponse> delete({
+    required String endpoint,
+    required String token,
+    Map<String, String>? headers,
+  }) async {
+    final Uri uri = await buildUri(endpoint: endpoint);
+    Map<String, String> requestHeaders = buildHeaders(token);
+    if (headers != null) {
+      requestHeaders.addAll(headers);
+    }
+
+    try {
+      final response = await http.delete(uri, headers: requestHeaders);
+      var apiResponse = handleResponse(response);
+      return apiResponse;
+    } on HttpException catch (httpException) {
+      return handleError(httpException.message);
+    } on SocketException {
+      return handleError('Error connecting to the server');
+    }
+  }
 }

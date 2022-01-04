@@ -41,7 +41,7 @@ class _BucketWidgetState extends State<BucketWidget> {
     Bucket? _updatedBucket = await Navigator.of(context).pushNamed(
       BucketFormPage.routeName,
       arguments: BucketFormArguments(isNew: false, bucket: _bucket),
-    ) as Bucket;
+    ) as Bucket?;
     if (_updatedBucket != null) {
       setState(() {
         _bucket = _updatedBucket;
