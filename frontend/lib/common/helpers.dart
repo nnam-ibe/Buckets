@@ -7,12 +7,24 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Stores the provided user and token in shared prefrences
-setUserPrefernces(User user, String token) async {
+Future<void> setUserPrefernces(User user, String token) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString(constants.username, user.username);
   prefs.setString(constants.userEmail, user.email);
   prefs.setInt(constants.userID, user.id);
   prefs.setString(constants.userToken, token);
+}
+
+/// Removes the users & token details from shared preferences.
+///
+/// Should be called in conjunction with [removeUserFromProvider]
+/// to avoid unwanted side effects.
+Future<void> removeUserFromPrefences() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.remove(constants.username);
+  prefs.remove(constants.userEmail);
+  prefs.remove(constants.userID);
+  prefs.remove(constants.userToken);
 }
 
 /// Gets the user from shared preferences if it exists
@@ -39,6 +51,14 @@ Future<String?> getTokenFromPreferences() async {
     return null;
   }
   return prefs.getString(constants.userToken);
+}
+
+/// Removes the user from the UserSession provider, using
+/// the [context] of the requesting widget.
+///
+/// This will cause the app to redirect to the logout page.
+void removeUserFromProvider(BuildContext context) {
+  Provider.of<UserSession>(context, listen: false).unsetUser();
 }
 
 /// Returns the current user token from the UserSession provider, using
