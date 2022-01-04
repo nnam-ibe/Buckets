@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api/api_response.dart';
 import 'package:frontend/api/authentication/auth_client.dart';
 import 'package:frontend/api/repositories.dart';
 import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/bucket.dart';
 import 'package:frontend/models/screen_arguments.dart';
-import 'package:frontend/pages/authentication/login_page.dart';
-import 'package:frontend/pages/widgets/bucket_widget.dart';
 import 'package:frontend/pages/forms/bucket_form_page.dart';
+import 'package:frontend/pages/widgets/bucket_widget.dart';
 
 class BucketsPage extends StatefulWidget {
   static const routeName = '/buckets';
