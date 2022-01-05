@@ -123,6 +123,40 @@ class _GoalFormPageState extends State<GoalFormPage> {
     }
   }
 
+  void deleteGoal() async {
+    if (screenArgs.isNew) return;
+    Repositories repositories = Repositories(token: token);
+    bool isDeleted = await repositories.deleteGoal(goal!.id);
+    if (!isDeleted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to delete bucket, ☹️️')));
+      return;
+    }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Deleted Goal')));
+    Navigator.of(context).pop();
+  }
+
+  void deleteGoalClicked() {
+    AlertDialog dialog = AlertDialog(
+      title: Text('Delete ${goal!.name}'),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel')),
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              deleteGoal();
+            },
+            child: const Text('Delete')),
+      ],
+    );
+    showDialog(context: context, builder: (context) => dialog);
+  }
+
   Widget showError(String errorMsg) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(errorMsg)));
@@ -156,6 +190,26 @@ class _GoalFormPageState extends State<GoalFormPage> {
     int bucketId = screenArgs.bucketId;
     return bucketsList.firstWhere((buc) => buc.id == bucketId,
         orElse: () => bucketsList.first);
+  }
+
+  List<ElevatedButton> getButtonBarBtns() {
+    var btns = [
+      ElevatedButton(
+        onPressed: saveGoal,
+        child: const Text('Save Goal'),
+      ),
+    ];
+    if (!screenArgs.isNew) {
+      btns.add(
+        ElevatedButton(
+          onPressed: deleteGoalClicked,
+          child: const Text('Delete Goal'),
+          style: ElevatedButton.styleFrom(primary: Colors.red),
+        ),
+      );
+    }
+
+    return btns;
   }
 
   @override
@@ -198,9 +252,9 @@ class _GoalFormPageState extends State<GoalFormPage> {
                     widget_factory.decimalFieldWidget(
                         controller: savedAmountController,
                         labelText: 'Amount Saved'),
-                    ElevatedButton(
-                      onPressed: saveGoal,
-                      child: const Text('Save Goal'),
+                    ButtonBar(
+                      alignment: MainAxisAlignment.center,
+                      children: getButtonBarBtns(),
                     ),
                   ],
                 ),
