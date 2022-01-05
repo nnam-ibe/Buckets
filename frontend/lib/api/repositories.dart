@@ -73,4 +73,13 @@ class Repositories {
     return await apiClient.put(
         endpoint: "goal/${goal.id}/", token: token, payload: goal.toMap());
   }
+
+  Future<bool> deleteGoal(int id) async {
+    ApiResponse apiResponse =
+        await apiClient.delete(endpoint: 'goal/$id/', token: token);
+    if (!apiResponse.wasSuccessful()) {
+      return false;
+    }
+    return true;
+  }
 }
