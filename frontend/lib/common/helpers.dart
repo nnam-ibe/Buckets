@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Stores the provided user and token in shared prefrences
-Future<void> setUserPrefernces(User user, String token) async {
+Future<void> setUserPreferences(User user, String token) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString(constants.username, user.username);
   prefs.setString(constants.userEmail, user.email);
@@ -19,7 +19,7 @@ Future<void> setUserPrefernces(User user, String token) async {
 ///
 /// Should be called in conjunction with [removeUserFromProvider]
 /// to avoid unwanted side effects.
-Future<void> removeUserFromPrefences() async {
+Future<void> removeUserFromPreferences() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.remove(constants.username);
   prefs.remove(constants.userEmail);
@@ -29,7 +29,7 @@ Future<void> removeUserFromPrefences() async {
 
 /// Gets the user from shared preferences if it exists
 /// returns null otherwise.
-Future<User?> getUserFromPrefrences() async {
+Future<User?> getUserFromPreferences() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if (!prefs.containsKey(constants.username) ||
       !prefs.containsKey(constants.userEmail) ||
@@ -62,7 +62,7 @@ void removeUserFromProvider(BuildContext context) {
 /// Removes the users login data from preferences & provider, and navigates
 /// to the login screen.
 Future<void> removeAllLoginData(BuildContext context) async {
-  await removeUserFromPrefences();
+  await removeUserFromPreferences();
   removeUserFromProvider(context);
   Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
 }
