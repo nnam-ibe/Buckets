@@ -7,12 +7,11 @@ ENV PYTHONUNBUFFERED=1
 
 FROM base AS python-deps
 
-WORKDIR /src
 RUN pip install pipenv
 
 # install python depencies in /.venv
-COPY Pipfile $WORK_DIR
-COPY Pipfile.lock $WORK_DIR
+COPY Pipfile .
+COPY Pipfile.lock .
 RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 
 
@@ -31,4 +30,4 @@ USER appuser
 COPY . .
 
 # Run the application
-ENTRYPOINT [ "entrypoint.sh" ]
+ENTRYPOINT [ "sh", "entrypoint.sh" ]

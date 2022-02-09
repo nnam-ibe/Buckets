@@ -19,14 +19,17 @@ services:
     depends_on:
       - db
     env_file:
-      - .env
+      - $BUCKETS_ENV_FILE
     restart: "on-failure"
     image: buckets:0.1-beta-1
   nginx:
-    build: nginx
+    image: nginx
     ports:
       - 8000:80
     volumes:
-      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - app
+
+volumes:
+    database-data:
