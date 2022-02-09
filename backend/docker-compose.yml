@@ -1,4 +1,4 @@
-version: "3.1"
+version: "3.7"
 
 services:
   db:
@@ -14,6 +14,19 @@ services:
       - "$BUCKETS_DB_PORT:5432"
     volumes:
       - database-data:/var/lib/postgresql/data/
-
-volumes:
-  database-data:
+  app:
+    build: .
+    depends_on:
+      - db
+    env_file:
+      - .env
+    restart: "on-failure"
+    image: buckets:0.1-beta-1
+  nginx:
+    build: nginx
+    ports:
+      - 8000:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - app
