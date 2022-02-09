@@ -22,5 +22,5 @@ format:
 pipenv-run:
 	pipenv run $(cmd)
 
-pipenv-shell:
+shell:
 	pipenv shell
