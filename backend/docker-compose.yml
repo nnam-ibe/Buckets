@@ -32,4 +32,4 @@ services:
       - app
 
 volumes:
-    database-data:
+  database-data:
