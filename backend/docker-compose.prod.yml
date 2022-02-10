@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+  db:
+    restart: always
+    image: postgres
+    container_name: buckets-postgres
+    environment:
+      - POSTGRES_USER=$BUCKETS_DB_USER
+      - POSTGRES_PASSWORD=$BUCKETS_DB_PASS
+      - POSTGRES_DB=$BUCKETS_DB_NAME
+      - POSTGRES_PORT=$BUCKETS_DB_PORT
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+  app:
+    image: nnamdiibe/buckets:latest
+    depends_on:
+      - db
+    env_file:
+      - $BUCKETS_ENV_FILE
+    restart: "on-failure"
+  nginx:
+    image: nginx
+    ports:
+      - 8000:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
+
+volumes:
+  database-data:
