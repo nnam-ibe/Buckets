@@ -1,0 +1,60 @@
+name: Deployment Workflow
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    name: Build, deploy and startup buckets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: nnamdiibe/buckets
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: "{{defaultContext}}:backend"
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Copy over docker-compose file to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.BUCKETS_SERVER_IP }}
+          username: ${{ secrets.BUCKETS_SERVER_USERNAME }}
+          key: ${{ secrets.BUCKETS_SERVER_SSH_KEY }}
+          passphrase: ${{ secrets.BUCKETS_SERVER_SSH_PASSPHRASE }}
+          port: ${{ secrets.BUCKETS_SERVER_PORT }}
+          source: "backend/docker-compose.prod.yml"
+          target: "/home/buckets/docker-compose.yml"
+
+      - name: ssh into server, build images & startup containers
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BUCKETS_SERVER_IP }}
+          username: ${{ secrets.BUCKETS_SERVER_USERNAME }}
+          key: ${{ secrets.BUCKETS_SERVER_SSH_KEY }}
+          passphrase: ${{ secrets.BUCKETS_SERVER_SSH_PASSPHRASE }}
+          port: ${{ secrets.BUCKETS_SERVER_PORT }}
+          script: |
+            cd /home/buckets
+            docker ps
+            echo "\nbuilding images, starting containers"
+            docker-compose up -d
+            echo "\ncontainers status"
+            docker ps
