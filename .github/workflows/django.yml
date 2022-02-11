@@ -2,6 +2,10 @@ name: Django Tests
 
 on: [push, pull_request]
 
+env:
+  BUCKETS_SECRET_KEY: ${{ secrets.BUCKETS_SECRET_KEY }}
+  BUCKETS_ALLOWED_HOSTS: "localhost"
+
 jobs:
   lint:
     runs-on: ubuntu-latest
