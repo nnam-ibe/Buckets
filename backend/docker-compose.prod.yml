@@ -13,7 +13,7 @@ services:
     volumes:
       - database-data:/var/lib/postgresql/data/
   app:
-    image: nnamdiibe/buckets:latest
+    image: nnamdiibe/buckets:$BUCKETS_IMAGE_TAG
     depends_on:
       - db
     env_file:

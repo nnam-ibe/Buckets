@@ -35,7 +35,7 @@ jobs:
       - name: Copy over docker-compose file to server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.BUCKETS_SERVER_IP }}
+          host: ${{ secrets.BUCKETS_SERVER_HOST }}
           username: ${{ secrets.BUCKETS_SERVER_USERNAME }}
           key: ${{ secrets.BUCKETS_SERVER_SSH_KEY }}
           passphrase: ${{ secrets.BUCKETS_SERVER_SSH_PASSPHRASE }}
@@ -47,13 +47,14 @@ jobs:
       - name: ssh into server, build images & startup containers
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.BUCKETS_SERVER_IP }}
+          host: ${{ secrets.BUCKETS_SERVER_HOST }}
           username: ${{ secrets.BUCKETS_SERVER_USERNAME }}
           key: ${{ secrets.BUCKETS_SERVER_SSH_KEY }}
           passphrase: ${{ secrets.BUCKETS_SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.BUCKETS_SERVER_PORT }}
           script: |
             cd /home/buckets
+            export BUCKETS_IMAGE_TAG=${{ steps.meta.outputs.tags }}
             docker ps
             echo "Building images, starting containers"
             docker-compose -f docker-compose.prod.yml up -d
