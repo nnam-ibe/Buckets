@@ -55,7 +55,7 @@ jobs:
           script: |
             cd /home/buckets
             docker ps
-            echo "\nbuilding images, starting containers"
-            docker-compose up -d
-            echo "\ncontainers status"
+            echo "Building images, starting containers"
+            docker-compose -f docker-compose.prod.yml up -d
+            echo "Containers status"
             docker ps
