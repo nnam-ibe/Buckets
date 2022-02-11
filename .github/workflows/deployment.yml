@@ -54,7 +54,7 @@ jobs:
           port: ${{ secrets.BUCKETS_SERVER_PORT }}
           script: |
             cd /home/buckets
-            export BUCKETS_IMAGE_TAG=${{ steps.meta.outputs.tags }}
+            export BUCKETS_IMAGE_TAG=${{ steps.meta.outputs.version }}
             docker ps
             echo "Building images, starting containers"
             docker-compose -f docker-compose.prod.yml up -d
