@@ -41,7 +41,8 @@ jobs:
           passphrase: ${{ secrets.BUCKETS_SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.BUCKETS_SERVER_PORT }}
           source: "backend/docker-compose.prod.yml"
-          target: "/home/buckets/docker-compose.yml"
+          target: "/home/buckets/"
+          strip_components: 1
 
       - name: ssh into server, build images & startup containers
         uses: appleboy/ssh-action@master
