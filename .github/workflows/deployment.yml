@@ -53,7 +53,7 @@ jobs:
           passphrase: ${{ secrets.BUCKETS_SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.BUCKETS_SERVER_PORT }}
           script: |
-            cd /home/buckets
+            cd ${{ secrets.BUCKETS_SCP_DIRECTORY }}
             export BUCKETS_IMAGE_TAG=${{ steps.meta.outputs.version }}
             docker ps
             echo "Building images, starting containers"
