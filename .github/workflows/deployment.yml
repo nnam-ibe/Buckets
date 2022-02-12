@@ -5,8 +5,8 @@ on:
     types: [published]
 
 jobs:
-  deploy:
-    name: Build, deploy and startup buckets
+  deployment:
+    name: Build, Deploy and Startup buckets
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
