@@ -5,8 +5,8 @@ on:
     types: [published]
 
 jobs:
-  deploy:
-    name: Build, deploy and startup buckets
+  deployment:
+    name: Build, Deploy and Startup buckets
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -43,6 +43,18 @@ jobs:
           source: "backend/docker-compose.prod.yml"
           target: ${{ secrets.BUCKETS_SCP_DIRECTORY }}
           strip_components: 1
+
+      - name: Copy over nginx.conf to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.BUCKETS_SERVER_HOST }}
+          username: ${{ secrets.BUCKETS_SERVER_USERNAME }}
+          key: ${{ secrets.BUCKETS_SERVER_SSH_KEY }}
+          passphrase: ${{ secrets.BUCKETS_SERVER_SSH_PASSPHRASE }}
+          port: ${{ secrets.BUCKETS_SERVER_PORT }}
+          source: "backend/nginx/conf.d/nginx.conf"
+          target: ${{ secrets.BUCKETS_NGINX_SCP_DIRECTORY }}
+          strip_components: 3
 
       - name: ssh into server, build images & startup containers
         uses: appleboy/ssh-action@master
