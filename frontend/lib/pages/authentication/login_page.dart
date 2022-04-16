@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
         String token = responseData['token'];
         AuthClient.token = token;
         updateUserProvider(user, token);
-        await helpers.setUserPrefernces(user, token);
+        await helpers.setUserPreferences(user, token);
         Navigator.of(context).pushReplacementNamed(BucketsPage.routeName);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
