@@ -44,6 +44,7 @@ Widget textFieldWidget({
   List<TextInputFormatter>? inputFormatters,
   bool obscureText = false,
   bool isRequired = true,
+  Function? additionalValidation,
 }) {
   return TextFormField(
     controller: controller,
@@ -56,6 +57,12 @@ Widget textFieldWidget({
     validator: (value) {
       if (isRequired && (value == null || value.isEmpty)) {
         return '$labelText is required';
+      }
+      if (additionalValidation != null) {
+        String? validationResult = additionalValidation(value);
+        if (validationResult != null) {
+          return validationResult;
+        }
       }
       return null;
     },

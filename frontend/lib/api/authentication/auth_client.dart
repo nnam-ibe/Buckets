@@ -34,4 +34,19 @@ class AuthClient {
     await helpers.removeAllLoginData(context);
     return apiResponse;
   }
+
+  Future<ApiResponse> createAccount({
+    required String username,
+    required String password,
+    required String email,
+  }) async {
+    ApiClient apiClient = ApiClient();
+    ApiResponse apiResponse =
+        await apiClient.post(endpoint: 'auth/register', payload: {
+      'username': username,
+      'password': password,
+      'email': email,
+    });
+    return apiResponse;
+  }
 }

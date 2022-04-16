@@ -94,3 +94,9 @@ User getUserFromProvider(BuildContext context) {
   }
   return user;
 }
+
+/// Returns true is the string [value] is at least [minLength] characters
+/// long, returns false otherwise.
+bool minimumLengthValidator(int minLength, String value) {
+  return value.length >= minLength;
+}

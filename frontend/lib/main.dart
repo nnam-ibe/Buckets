@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/models/environment.dart';
+import 'package:frontend/pages/authentication/signup_page.dart';
 import 'package:frontend/pages/forms/bucket_form_page.dart';
 import 'package:frontend/pages/buckets_page.dart';
 import 'package:frontend/pages/forms/goal_form_page.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
       routes: {
         RootPage.routeName: (context) => const RootPage(),
         LoginPage.routeName: (context) => const LoginPage(),
+        SignUpPage.routeName: (context) => const SignUpPage(),
         BucketsPage.routeName: (context) => const BucketsPage(),
         BucketFormPage.routeName: (context) => const BucketFormPage(),
         GoalFormPage.routeName: (context) => const GoalFormPage(),

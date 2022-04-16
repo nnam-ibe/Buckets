@@ -4,6 +4,7 @@ import 'package:frontend/api/authentication/auth_client.dart';
 import 'package:frontend/api/authentication/session.dart';
 import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/user.dart';
+import 'package:frontend/pages/authentication/signup_page.dart';
 import 'package:frontend/pages/buckets_page.dart';
 import 'package:provider/provider.dart';
 
@@ -80,6 +81,10 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void onSignUpClick() {
+    Navigator.of(context).pushReplacementNamed(SignUpPage.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,6 +113,9 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text('Login'),
                   onPressed: onLoginClick,
                 ),
+                TextButton(
+                    onPressed: onSignUpClick,
+                    child: const Text('Create Account'))
               ],
             ),
           ),
