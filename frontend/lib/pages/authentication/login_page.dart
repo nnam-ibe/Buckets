@@ -4,7 +4,9 @@ import 'package:frontend/api/authentication/auth_client.dart';
 import 'package:frontend/api/authentication/session.dart';
 import 'package:frontend/common/helpers.dart' as helpers;
 import 'package:frontend/models/user.dart';
+import 'package:frontend/pages/authentication/signup_page.dart';
 import 'package:frontend/pages/buckets_page.dart';
+import 'package:frontend/pages/widgets/widget_factory.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -33,25 +35,6 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Widget getTextFieldWidget(
-      {required TextEditingController controller,
-      required String labelText,
-      bool obscureText = false}) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        labelText: labelText,
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter a $labelText';
-        }
-        return null;
-      },
-    );
-  }
-
   void updateUserProvider(User user, String token) {
     Provider.of<UserSession>(
       context,
@@ -70,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
         String token = responseData['token'];
         AuthClient.token = token;
         updateUserProvider(user, token);
-        await helpers.setUserPrefernces(user, token);
+        await helpers.setUserPreferences(user, token);
         Navigator.of(context).pushReplacementNamed(BucketsPage.routeName);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -78,6 +61,10 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     }
+  }
+
+  void onSignUpClick() {
+    Navigator.of(context).pushReplacementNamed(SignUpPage.routeName);
   }
 
   @override
@@ -95,9 +82,9 @@ class _LoginPageState extends State<LoginPage> {
                   'Welcome',
                   style: Theme.of(context).textTheme.headline1,
                 ),
-                getTextFieldWidget(
+                textFieldWidget(
                     controller: usernameController, labelText: 'Username'),
-                getTextFieldWidget(
+                textFieldWidget(
                     controller: passwordController,
                     labelText: 'Password',
                     obscureText: true),
@@ -108,6 +95,9 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text('Login'),
                   onPressed: onLoginClick,
                 ),
+                TextButton(
+                    onPressed: onSignUpClick,
+                    child: const Text('Create Account'))
               ],
             ),
           ),

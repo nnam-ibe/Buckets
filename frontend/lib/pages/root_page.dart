@@ -48,7 +48,7 @@ class _RootPageState extends State<RootPage> {
     late User? user;
     late String? token;
     await Future.wait([
-      helpers.getUserFromPrefrences().then((value) => user = value),
+      helpers.getUserFromPreferences().then((value) => user = value),
       helpers.getTokenFromPreferences().then((value) => token = value),
     ]);
     return updateUserProvider(user, token);
