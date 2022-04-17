@@ -8,10 +8,10 @@ class AuthClient {
 
   static String? token;
 
-  static final AuthClient _authClient = AuthClient._constructor();
+  static AuthClient authClient = AuthClient._constructor();
 
   factory AuthClient() {
-    return _authClient;
+    return authClient;
   }
 
   Future<ApiResponse> login({
