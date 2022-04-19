@@ -17,6 +17,7 @@ services:
     image: nnamdiibe/buckets:$BUCKETS_IMAGE_TAG
     depends_on:
       - db
+      - redis
     env_file:
       - $BUCKETS_ENV_FILE
     restart: unless-stopped
@@ -35,6 +36,15 @@ services:
     depends_on:
       - app
 
+  redis:
+    image: redis:6.2-alpine
+    restart: unless-stopped
+    ports:
+      - $BUCKETS_REDIS_PORT:$BUCKETS_REDIS_PORT
+    command: redis-server --save 20 1 --loglevel warning --requirepass $BUCKETS_REDIS_PASSWORD
+    volumes:
+      - redis:/data
+
   certbot:
     image: certbot/certbot
     restart: unless-stopped
@@ -45,3 +55,5 @@ services:
 
 volumes:
   database-data:
+  redis:
+    driver: local

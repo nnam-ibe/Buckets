@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   db:
-    restart: always
+    restart: unless-stopped
     image: postgres
     container_name: buckets-postgres
     environment:
@@ -12,22 +12,17 @@ services:
       - POSTGRES_PORT=$BUCKETS_DB_PORT
     volumes:
       - database-data:/var/lib/postgresql/data/
-  app:
-    build: .
-    depends_on:
-      - db
-    env_file:
-      - $BUCKETS_ENV_FILE
-    restart: "on-failure"
-    image: buckets:0.1-beta-1
-  nginx:
-    image: nginx
+
+  redis:
+    image: redis:6.2-alpine
+    restart: unless-stopped
     ports:
-      - 8000:80
+      - $BUCKETS_REDIS_PORT:$BUCKETS_REDIS_PORT
+    command: redis-server --save 20 1 --loglevel warning --requirepass $BUCKETS_REDIS_PASSWORD
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    depends_on:
-      - app
+      - redis:/data
 
 volumes:
   database-data:
+  redis:
+    driver: local
