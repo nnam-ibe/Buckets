@@ -13,13 +13,15 @@ class Bucket(models.Model):
 
 
 class Goal(models.Model):
+    YEARLY = "YEARLY"
+    QUARTERLY = "QUARTERLY"
     MONTHLY = "MONTHLY"
-    BI_WEEKLY = "BI_WEEKLY"
     WEEKLY = "WEEKLY"
     NA = "NA"
     CONTRIB_FREQUENCY = [
+        (YEARLY, "Yearly"),
+        (QUARTERLY, "Quarterly"),
         (MONTHLY, "Monthly"),
-        (BI_WEEKLY, "Bi-Weekly"),
         (WEEKLY, "Weekly"),
         (NA, "N/A"),
     ]

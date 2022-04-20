@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "knox",
     "accounts",
     "corsheaders",
+    "django_q",
 ]
 
 MIDDLEWARE = [
@@ -105,6 +106,19 @@ DATABASES = {
         "HOST": BUCKETS_DB_HOST,
         "PORT": BUCKETS_DB_PORT,
     }
+}
+
+# Django Q Cluster
+Q_CLUSTER = {
+    "name": "buckets_q_cluster",
+    "workers": 4,
+    "recycle": 500,
+    "timeout": 60,
+    "compress": True,
+    "save_limit": 250,
+    "queue_limit": 500,
+    "cpu_affinity": 1,
+    "label": "Django Q Label",
 }
 
 
