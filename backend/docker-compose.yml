@@ -12,17 +12,22 @@ services:
       - POSTGRES_PORT=$BUCKETS_DB_PORT
     volumes:
       - database-data:/var/lib/postgresql/data/
-
-  redis:
-    image: redis:6.2-alpine
-    restart: unless-stopped
+  app:
+    build: .
+    depends_on:
+      - db
+    env_file:
+      - $BUCKETS_ENV_FILE
+    restart: "on-failure"
+    image: buckets:0.1-beta-1
+  nginx:
+    image: nginx
     ports:
-      - $BUCKETS_REDIS_PORT:$BUCKETS_REDIS_PORT
-    command: redis-server --save 20 1 --loglevel warning --requirepass $BUCKETS_REDIS_PASSWORD
+      - 8000:80
     volumes:
-      - redis:/data
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
 
 volumes:
   database-data:
-  redis:
-    driver: local
