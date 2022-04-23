@@ -4,6 +4,7 @@ import string
 from django.contrib.auth.models import User
 
 from business_logic.models import Bucket, Goal
+from business_logic.lib import scheduler
 
 
 class Utils:
@@ -71,6 +72,7 @@ class Utils:
             "amount_saved": kwargs.get("amount_saved", "20.00"),
             "contrib_amount": kwargs.get("contrib_amount", "30.00"),
             "contrib_frequency": kwargs.get("contrib_frequency", "MONTHLY"),
+            "auto_update": kwargs.get("auto_update", True),
             "bucket": kwargs.get(
                 "bucket",
                 Utils.create_test_bucket().id
@@ -86,7 +88,10 @@ class Utils:
     @staticmethod
     def create_test_goal(**kwargs):
         goal_attrs = Utils.get_test_goal(**kwargs)
-        return Goal.objects.create(**goal_attrs)
+        goal = Goal.objects.create(**goal_attrs)
+        if goal.auto_update:
+            scheduler.schedule_goal(goal)
+        return goal
 
     @staticmethod
     def create_test_goals(len=3, **kwargs):

@@ -42,7 +42,6 @@ class GoalViewSetTestCase(APITestCase):
         """
         Should not be able to create a goal for another users bucket
         """
-        bucket = Utils.create_test_bucket()
         payload = Utils.get_test_goal()
         response = self.client.post(
             "/api/goal/", payload, format="json", **self.header_token

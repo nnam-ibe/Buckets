@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from ..serializers import GoalSerializer
 from ..models import Goal
 from ..lib.authorization import Authorization, Action, RecordType
+from ..lib import scheduler
+from ..lib import goal_service
 
 
 class GoalViewSet(viewsets.ModelViewSet):
@@ -29,6 +31,9 @@ class GoalViewSet(viewsets.ModelViewSet):
             return auth.get_error_as_response()
 
         goal = Goal.objects.create(**serializer.validated_data)
+        if goal.auto_update:
+            scheduler.schedule_goal(goal)
+
         saved_data = self.get_serializer(goal).data
         return Response(saved_data, status=status.HTTP_201_CREATED)
 
@@ -67,6 +72,7 @@ class GoalViewSet(viewsets.ModelViewSet):
             Goal.objects.filter(bucket__user=auth.user).select_related("bucket").all()
         )
         goal = get_object_or_404(queryset, pk=pk)
+        original_data = self.get_serializer(goal).data
 
         serializer = self.get_serializer(goal, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -77,6 +83,9 @@ class GoalViewSet(viewsets.ModelViewSet):
             return auth.get_error_as_response()
 
         self.perform_update(serializer)
+
+        if goal_service.should_update_schedule(original_data, serializer.data):
+            scheduler.schedule_goal(goal)
 
         if getattr(goal, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
@@ -92,6 +101,9 @@ class GoalViewSet(viewsets.ModelViewSet):
 
         pk = kwargs.get("pk", None)
         queryset = Goal.objects.filter(bucket__user=auth.user).all()
-        get_object_or_404(queryset, pk=pk)
+        goal = get_object_or_404(queryset, pk=pk)
+
+        if goal.auto_update:
+            scheduler.delete_schedule(goal_id=goal.id)
 
         return super().destroy(request, **kwargs)
